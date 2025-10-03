@@ -13,6 +13,7 @@ const navigationLinks = [
   { type: 'separator' },
   { type: 'title', text: 'Módulo Credenciales' },// Título del módulo
   { to: '/contrasenas', text: 'Contraseñas', icon: ShieldCheckIcon },// Ícono de "escudo"
+  { type: 'separator' },
 ]
 
 export default function DashboardLayout() {

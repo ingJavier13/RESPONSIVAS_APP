@@ -2,28 +2,32 @@
 
 import { useEffect, useState } from 'react';
 import KpiCard, { KpiCardSkeleton } from '../components/KpiCard';
-import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon } from '@heroicons/react/24/outline';
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ total: 0, faltantes: 0 });
-  const [reciente, setReciente] = useState(null);
+  const [recienteResponsiva, setRecienteResponsiva] = useState(null);
+  const [recientePassword, setRecientePassword] = useState(null); // 1. Nuevo estado
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchKpis = async () => {
       try {
         setLoading(true);
-        // Hacemos las dos peticiones a la API en paralelo
-        const [statsRes, recienteRes] = await Promise.all([
+        // 2. Añadimos la nueva petición al Promise.all
+        const [statsRes, recienteResponsivaRes, recientePasswordRes] = await Promise.all([
           fetch('http://localhost:3001/api/responsivas/kpis/stats'),
-          fetch('http://localhost:3001/api/responsivas/kpis/reciente')
+          fetch('http://localhost:3001/api/responsivas/kpis/reciente'),
+          fetch('http://localhost:3001/api/passwords/kpis/reciente')
         ]);
 
         const statsData = await statsRes.json();
-        const recienteData = await recienteRes.json();
+        const recienteResponsivaData = await recienteResponsivaRes.json();
+        const recientePasswordData = await recientePasswordRes.json();
         
         setStats(statsData);
-        setReciente(recienteData);
+        setRecienteResponsiva(recienteResponsivaData);
+        setRecientePassword(recientePasswordData); // Guardamos el nuevo dato
       } catch (error) {
         console.error("Error al cargar los KPIs:", error);
       } finally {
@@ -41,10 +45,15 @@ export default function DashboardHome() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <KpiCardSkeleton />
-        <KpiCardSkeleton />
-        <KpiCardSkeleton />
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <KpiCardSkeleton />
+          <KpiCardSkeleton />
+          <KpiCardSkeleton />
+        </div>
+        {/* Skeleton para las tarjetas de actividad reciente */}
+        <div className="bg-white p-6 rounded-lg shadow-sm h-24 animate-pulse"></div>
+        <div className="bg-white p-6 rounded-lg shadow-sm h-24 animate-pulse"></div>
       </div>
     );
   }
@@ -65,28 +74,44 @@ export default function DashboardHome() {
           icon={ExclamationCircleIcon}
           colorClass="bg-red-500"
         />
-        {/* Aquí podrías agregar un tercer KPI numérico si quieres */}
       </div>
 
-      {/* Sección de Última Actividad */}
+      {/* Sección de Actividad Reciente */}
       <div>
-        <h3 className="text-lg font-semibold text-slate-800 mb-4">Última Actividad</h3>
-        {reciente && reciente.id ? (
-          <div className="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-slate-100 rounded-full">
-                <ClockIcon className="h-6 w-6 text-slate-600" />
+        <h3 className="text-lg font-semibold text-slate-800 mb-4">Actividad Reciente</h3>
+        <div className="space-y-4">
+          {/* Tarjeta de Última Responsiva */}
+          {recienteResponsiva && recienteResponsiva.id ? (
+            <div className="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-slate-100 rounded-full"><ClockIcon className="h-6 w-6 text-slate-600" /></div>
+                <div>
+                  <p className="font-semibold text-slate-800">{recienteResponsiva.responsable}</p>
+                  <p className="text-sm text-slate-500">Recibió {recienteResponsiva.tipo_equipo} {recienteResponsiva.marca}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-slate-800">{reciente.responsable}</p>
-                <p className="text-sm text-slate-500">Recibió {reciente.tipo_equipo} {reciente.marca}</p>
-              </div>
+              <p className="text-sm font-medium text-slate-600">{formatearFecha(recienteResponsiva.fecha)}</p>
             </div>
-            <p className="text-sm font-medium text-slate-600">{formatearFecha(reciente.fecha)}</p>
-          </div>
-        ) : (
-          <p className="text-slate-500">No hay actividad reciente registrada.</p>
-        )}
+          ) : (
+            <p className="text-slate-500 text-sm">No hay actividad de responsivas registrada.</p>
+          )}
+
+          {/* Nueva tarjeta de Última Contraseña */}
+          {recientePassword && recientePassword.id ? (
+            <div className="bg-white p-6 rounded-lg shadow-sm flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-slate-100 rounded-full"><KeyIcon className="h-6 w-6 text-slate-600" /></div>
+                <div>
+                  <p className="font-semibold text-slate-800">{recientePassword.servicio_o_usuario}</p>
+                  <p className="text-sm text-slate-500">Se añadió nueva contraseña en categoría "{recientePassword.categoria}"</p>
+                </div>
+              </div>
+              <p className="text-sm font-medium text-slate-600">{formatearFecha(recientePassword.created_at)}</p>
+            </div>
+          ) : (
+             <p className="text-slate-500 text-sm">No hay contraseñas recientes registradas.</p>
+          )}
+        </div>
       </div>
     </div>
   );

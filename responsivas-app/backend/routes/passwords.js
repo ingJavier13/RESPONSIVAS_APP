@@ -95,6 +95,22 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// GET /api/passwords/kpis/reciente
+router.get('/kpis/reciente', async (req, res) => {
+  try {
+    // La columna 'created_at' es ideal para saber cuál es la más nueva
+    const recienteQuery = "SELECT * FROM contrasenas ORDER BY created_at DESC LIMIT 1";
+    
+    const recienteResult = await pool.query(recienteQuery);
+
+    // Devuelve el primer resultado o un objeto vacío si no hay ninguno
+    res.json(recienteResult.rows[0] || {}); 
+  } catch (error) {
+    console.error('Error detallado en KPI reciente de contraseñas:', error);
+    res.status(500).json({ error: 'Error al obtener la última contraseña' });
+  }
+});
+
 
 // --- LÍNEA ESENCIAL AL FINAL DEL ARCHIVO ---
 module.exports = router;
