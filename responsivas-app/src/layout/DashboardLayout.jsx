@@ -1,5 +1,5 @@
 //src/layout/DashboardLayout.jsx
-import { PlusIcon, DocumentTextIcon, DocumentPlusIcon, HomeIcon } from '@heroicons/react/24/solid'
+import { DocumentPlusIcon, HomeIcon, ShieldCheckIcon, DocumentMagnifyingGlassIcon, DocumentCheckIcon } from '@heroicons/react/24/solid'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import Header from '../components/Header'
 
@@ -7,13 +7,12 @@ const navigationLinks = [
   { to: '/', text: 'Inicio', icon: HomeIcon },
   { type: 'separator' },// Línea separadora
   { type: 'title', text: 'Módulo Responsivas' },// Título del módulo
-  { to: '/crear', text: 'Nueva Responsiva', icon: PlusIcon },
-  { to: '/ver', text: 'Ver Responsivas', icon: DocumentTextIcon },
-  { to: '/subir', text: 'Responsiva Firmada', icon: DocumentPlusIcon },
+  { to: '/crear', text: 'Nueva Responsiva', icon: DocumentPlusIcon },// Ícono de "más"
+  { to: '/ver', text: 'Ver Responsivas', icon: DocumentMagnifyingGlassIcon },// Ícono de "documento"
+  { to: '/subir', text: 'Responsiva Firmada', icon: DocumentCheckIcon },// Ícono de "documento con más"
   { type: 'separator' },
   { type: 'title', text: 'Módulo Credenciales' },// Título del módulo
-  { to: '/crear-credencial', text: 'Nueva Credencial', icon: PlusIcon },
-  { to: '/ver-credenciales', text: 'Ver Credenciales', icon: DocumentTextIcon },
+  { to: '/contrasenas', text: 'Contraseñas', icon: ShieldCheckIcon },// Ícono de "escudo"
 ]
 
 export default function DashboardLayout() {
@@ -30,8 +29,6 @@ export default function DashboardLayout() {
         </div>
         <nav className="mt-4 px-4">
           <ul className="space-y-2">
-
-            {/* --- INICIO DE LA MODIFICACIÓN DEL .MAP() --- */}
             {navigationLinks.map((item, index) => {
               // Si el item es un separador
               if (item.type === 'separator') {
@@ -47,7 +44,7 @@ export default function DashboardLayout() {
                 );
               }
 
-              // Si es un link normal (código que ya tenías)
+              // Si es un link normal
               const Icon = item.icon
               const isActive = pathname === item.to
 
@@ -67,8 +64,6 @@ export default function DashboardLayout() {
                 </li>
               )
             })}
-            {/* --- FIN DE LA MODIFICACIÓN --- */}
-
           </ul>
         </nav>
       </aside>
