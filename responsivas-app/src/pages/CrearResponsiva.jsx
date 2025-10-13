@@ -117,12 +117,11 @@ export default function CrearResponsiva() {
     
     const base64Logo = await cargarLogo();
     if(base64Logo) {
-      doc.addImage(base64Logo, 'PNG', left, 18, 30, 18);
+      doc.addImage(base64Logo, 'PNG', left, 18,30,18);
     }
 
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('GRUPO IG', left + 35, 20);
     doc.setFontSize(14);
     doc.text('CARTA RESPONSIVA DE EQUIPO', pageWidth / 2, y, { align: 'center' });
     doc.setDrawColor(0);
