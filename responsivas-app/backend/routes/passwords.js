@@ -111,6 +111,55 @@ router.get('/kpis/reciente', async (req, res) => {
   }
 });
 
+// GET /api/passwords/:id (Obtener un registro por su ID)
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT id, categoria, servicio_o_usuario, descripcion FROM contrasenas WHERE id = $1',
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Registro no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error al obtener el registro:', err);
+    res.status(500).json({ error: 'Error al obtener el registro' });
+  }
+});
+
+// PUT /api/passwords/:id (Actualizar un registro)
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { categoria, servicio_o_usuario, contrasena, descripcion } = req.body;
+
+  try {
+    let contrasena_cifrada;
+    // Si el usuario envió una nueva contraseña (no es una cadena vacía), la ciframos.
+    if (contrasena) {
+      contrasena_cifrada = encrypt(contrasena);
+      await pool.query(
+        `UPDATE contrasenas SET categoria = $1, servicio_o_usuario = $2, contrasena_hash = $3, descripcion = $4 WHERE id = $5`,
+        [categoria, servicio_o_usuario, contrasena_cifrada, descripcion, id]
+      );
+    } else {
+      // Si no envió una nueva contraseña, actualizamos todo excepto la contraseña.
+      await pool.query(
+        `UPDATE contrasenas SET categoria = $1, servicio_o_usuario = $2, descripcion = $3 WHERE id = $4`,
+        [categoria, servicio_o_usuario, descripcion, id]
+      );
+    }
+    
+    // Devolvemos el objeto actualizado (sin la contraseña)
+    const updatedResult = await pool.query('SELECT id, categoria, servicio_o_usuario, descripcion FROM contrasenas WHERE id = $1', [id]);
+    res.status(200).json(updatedResult.rows[0]);
+  } catch (err) {
+    console.error('Error al actualizar el registro:', err);
+    res.status(500).json({ error: 'Error al actualizar el registro' });
+  }
+});
+
 
 // --- LÍNEA ESENCIAL AL FINAL DEL ARCHIVO ---
 module.exports = router;
