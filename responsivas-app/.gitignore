@@ -41,3 +41,6 @@ uploads/
 # OS generated files
 Thumbs.db
 ehthumbs.db
+
+# generated password hash file
+.hash-password.js
