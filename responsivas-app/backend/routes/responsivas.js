@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
    }
 });
 
-// --- MODIFICA ESTA RUTA ---
+
 // Obtener todas las responsivas (Actualizada con búsqueda)
 // --- RUTA GET / CON CONSOLE.LOG ---
 router.get('/', async (req, res) => {
@@ -99,9 +99,42 @@ router.get('/lista', async (req, res) => {
  }
 });
 
-// --- RUTAS DE KPIs (sin cambios) ---
-router.get('/kpis/stats', async (req, res) => { /* ... */ });
-router.get('/kpis/reciente', async (req, res) => { /* ... */ });
+
+// Modulo de KPIs
+// GET /api/responsivas/kpis/stats
+router.get('/kpis/stats', async (req, res) => {
+  try {
+    const totalQuery = "SELECT COUNT(*) as total FROM responsivas";
+    const faltantesQuery = "SELECT COUNT(*) as faltantes FROM responsivas WHERE archivo_pdf IS NULL";
+    
+    const totalResult = await pool.query(totalQuery);
+    const faltantesResult = await pool.query(faltantesQuery);
+
+    const stats = {
+      total: totalResult.rows[0].total,
+      faltantes: faltantesResult.rows[0].faltantes,
+    };
+
+    res.json(stats);
+  } catch (error) {
+    console.error('Error detallado en KPIs stats:', error);
+    res.status(500).json({ error: 'Error al obtener las estadísticas' });
+  }
+});
+
+// GET /api/responsivas/kpis/reciente
+router.get('/kpis/reciente', async (req, res) => {
+  try {
+    const recienteQuery = "SELECT * FROM responsivas ORDER BY id DESC LIMIT 1";
+    
+    const recienteResult = await pool.query(recienteQuery);
+
+    res.json(recienteResult.rows[0] || {}); 
+  } catch (error) {
+    console.error('Error detallado en KPI reciente:', error);
+    res.status(500).json({ error: 'Error al obtener la última responsiva' });
+  }
+});
 
 
 module.exports = router;
