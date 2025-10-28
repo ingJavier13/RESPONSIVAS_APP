@@ -14,6 +14,6 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/passwords', passwordsRouter)
 app.use('/api/auth', authRouter);
 
-app.listen(3001, () => {
-  console.log('Servidor corriendo en http://localhost:3001')
+app.listen(3001, '0.0.0.0', () => {
+  console.log('Servidor corriendo en http://192.168.1.12:3001')
 })

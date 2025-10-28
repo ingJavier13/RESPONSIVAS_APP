@@ -102,7 +102,7 @@ router.get('/kpis/stats', async (req, res) => {
 // GET /api/responsivas/kpis/reciente
 router.get('/kpis/reciente', async (req, res) => {
   try {
-    const recienteQuery = "SELECT * FROM responsivas ORDER BY fecha DESC LIMIT 1";
+    const recienteQuery = "SELECT * FROM responsivas ORDER BY id DESC LIMIT 1";
     
     const recienteResult = await pool.query(recienteQuery);
 

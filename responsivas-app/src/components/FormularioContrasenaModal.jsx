@@ -66,8 +66,8 @@ export default function FormularioContrasenaModal({ isOpen, onClose, onPasswordA
     }
 
     const url = isEditing 
-      ? `http://localhost:3001/api/passwords/${editingPassword.id}`
-      : 'http://localhost:3001/api/passwords';
+      ? `http://192.168.1.12:3001/api/passwords/${editingPassword.id}` //en desarrollo localhost:3001, en producion el puerto del servidor.
+      : 'http://192.168.1.12:3001/api/passwords';
     
     const method = isEditing ? 'PUT' : 'POST';
 

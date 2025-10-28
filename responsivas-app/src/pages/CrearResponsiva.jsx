@@ -65,7 +65,7 @@ export default function CrearResponsiva() {
     setAlerta({ msg: '', type: '' });
 
     try {
-      const res = await fetch('http://localhost:3001/api/responsivas', {
+      const res = await fetch('http://192.168.1.12:3001/api/responsivas', { //en desarrollo localhost:3001, en producion el puerto del servidor.
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

@@ -23,7 +23,7 @@ export default function SubirResponsiva() {
 
   useEffect(() => {
     // Aquí podrías poner un estado de carga si la lista tarda en llegar
-    fetch('http://localhost:3001/api/responsivas/lista')
+    fetch('http://192.168.1.12:3001/api/responsivas/lista') //en desarrollo localhost:3001, en producion el puerto del servidor.
       .then(res => res.json())
       .then(data => setResponsivas(data))
       .catch(err => console.error('Error al cargar lista:', err))
@@ -41,7 +41,7 @@ export default function SubirResponsiva() {
     formData.append('id', responsivaId)
 
     try {
-      const res = await fetch('http://localhost:3001/api/responsivas/upload', {
+      const res = await fetch('http://192.168.1.12:3001/api/responsivas/upload', { //en desarrollo localhost:3001, en producion el puerto del servidor.
         method: 'POST',
         body: formData,
       })

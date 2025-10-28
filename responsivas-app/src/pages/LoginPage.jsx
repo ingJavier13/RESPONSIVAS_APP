@@ -21,7 +21,7 @@ export default function LoginPage() {
     setIsLoading(true); // Inicia la carga
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/login', {
+      const res = await fetch('http://192.168.1.12:3001/api/auth/login', { //en desarrollo localhost:3001, en producion el puerto del servidor.
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

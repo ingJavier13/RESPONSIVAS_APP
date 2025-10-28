@@ -16,9 +16,9 @@ export default function DashboardHome() {
         setLoading(true);
         // 2. Añadimos la nueva petición al Promise.all
         const [statsRes, recienteResponsivaRes, recientePasswordRes] = await Promise.all([
-          fetch('http://localhost:3001/api/responsivas/kpis/stats'),
-          fetch('http://localhost:3001/api/responsivas/kpis/reciente'),
-          fetch('http://localhost:3001/api/passwords/kpis/reciente')
+          fetch('http://192.168.1.12:3001/api/responsivas/kpis/stats'),//en desarrollo localhost:3001, en producion el puerto del servidor.
+          fetch('http://192.168.1.12:3001/api/responsivas/kpis/reciente'),
+          fetch('http://192.168.1.12:3001/api/passwords/kpis/reciente')
         ]);
 
         const statsData = await statsRes.json();

@@ -50,7 +50,7 @@ export default function GestionContrasenas() {
     const fetchPasswords = async () => {
       try {
         setLoading(true);
-        const res = await fetch('http://localhost:3001/api/passwords');
+        const res = await fetch('http://192.168.1.12:3001/api/passwords');//en desarrollo localhost:3001, en producion el puerto del servidor.
         const data = await res.json();
         setPasswords(data);
       } catch (error) {
@@ -77,7 +77,7 @@ export default function GestionContrasenas() {
   const handlePasswordDeleted = async () => {
     if (!passwordToDelete) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/passwords/${passwordToDelete.id}`, { method: 'DELETE' });
+      const res = await fetch(`http://192.168.1.12:3001/api/passwords/${passwordToDelete.id}`, { method: 'DELETE' });//en desarrollo localhost:3001, en producion el puerto del servidor.
       if (!res.ok) throw new Error('Error en el servidor');
       setPasswords(prev => prev.filter(p => p.id !== passwordToDelete.id));
       toast.success('Registro eliminado.');
@@ -97,7 +97,7 @@ export default function GestionContrasenas() {
     }
     try {
       setIsRevealing(true);
-      const res = await fetch(`http://localhost:3001/api/passwords/${id}/reveal`);
+      const res = await fetch(`http://192.168.1.12:3001/api/passwords/${id}/reveal`);//en desarrollo localhost:3001, en producion el puerto del servidor.
       if (!res.ok) throw new Error('No se pudo obtener la contraseña');
       const data = await res.json();
       setRevealedPasswordId(id);

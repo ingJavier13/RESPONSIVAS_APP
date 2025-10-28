@@ -31,7 +31,7 @@ export default function VerResponsivas() {
   const confirmarEliminacion = async () => {
     if (!idAEliminar) return;
     try {
-      await fetch(`http://localhost:3001/api/responsivas/${idAEliminar}`, { method: 'DELETE' })
+      await fetch(`http://192.168.1.12:3001/api/responsivas/${idAEliminar}`, { method: 'DELETE' }) //en desarrollo localhost:3001, en producion el puerto del servidor.
       setResponsivas(prev => prev.filter(r => r.id !== idAEliminar))
       cerrarModal()
     } catch (err) {
@@ -47,7 +47,7 @@ export default function VerResponsivas() {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3001/api/responsivas')
+    fetch('http://192.168.1.12:3001/api/responsivas') //en desarrollo localhost:3001, en producion el puerto del servidor.
       .then(res => res.json())
       .then(data => setResponsivas(data))
       .catch(err => console.error('Error al cargar responsivas:', err))
@@ -88,7 +88,7 @@ export default function VerResponsivas() {
                         {/* Corregido para usar el nombre de tu campo */}
                         {r.archivo_pdf ? (
                           <a
-                            href={`http://localhost:3001/uploads/${r.archivo_pdf}`}
+                            href={`http://192.168.1.12:3001/uploads/${r.archivo_pdf}`} //en desarrollo localhost:3001, en producion el puerto del servidor.
                             target="_blank" 
                             rel="noopener noreferrer"
                             title="Ver responsiva firmada"
