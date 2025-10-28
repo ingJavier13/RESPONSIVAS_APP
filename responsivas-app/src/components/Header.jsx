@@ -5,12 +5,12 @@ import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 
 export default function Header({ pageTitle = 'Dashboard' }) {
-  // 1. Mueve la función handleLogout aquí, al nivel principal del componente.
+  // Se Mueve la función handleLogout aquí, al nivel principal del componente.
   const handleLogout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
   };
-
+//se corrige el Menu.Item para que sea un botón estilizado que llama a la función.
   return (
     <header className="bg-white shadow-sm mb-8 p-4 rounded-lg flex justify-between items-center">
       <h1 className="text-2xl font-bold text-slate-800">{pageTitle}</h1>
@@ -43,7 +43,7 @@ export default function Header({ pageTitle = 'Dashboard' }) {
                 )}
               </Menu.Item>
               
-              {/* 2. Corrige el Menu.Item para que sea un botón estilizado que llama a la función. */}
+              {/*Se Corrige el Menu.Item para que sea un botón estilizado que llama a la función. */}
               <Menu.Item>
                 {({ active }) => (
                   <button

@@ -8,7 +8,7 @@ require('dotenv').config();
 
 // --- Configuración de Cifrado ---
 const algorithm = 'aes-256-cbc';
-// Asegúrate de que tu .env tenga una LLAVE HEXADECIMAL de 64 caracteres
+// La clave debe ser de 32 bytes (256 bits) para aes-256
 const key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
 
 const encrypt = (text) => {
