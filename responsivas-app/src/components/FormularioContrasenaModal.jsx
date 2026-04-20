@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 const CATEGORIAS = [
   "CORREOS HOSTING", "CORREO LICENCIA OFFICE", "SCRIPTCASE", 
   "VPN Y SERVIDOR", "ZKTIME", "TABLETS", "CARPETAS COMPARTIDAS", 
-  "CAMARAS", "COMPUTADORAS", "CORREOS SIRA"
+  "CAMARAS", "COMPUTADORAS", "CORREOS SIRA", "DATAROOM", "MAQUINAS VIRTUALES", "OTROS"
 ];
 
 export default function FormularioContrasenaModal({ isOpen, onClose, onPasswordAdded, onPasswordUpdated, editingPassword }) {

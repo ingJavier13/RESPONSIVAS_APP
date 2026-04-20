@@ -10,7 +10,7 @@ import { KpiCardSkeleton } from '../components/KpiCard'; // Skeleton para carga
 const CATEGORIAS = [
   "CORREOS HOSTING", "CORREO LICENCIA OFFICE", "SCRIPTCASE", 
   "VPN Y SERVIDOR", "ZKTIME", "TABLETS", "CARPETAS COMPARTIDAS", 
-  "CAMARAS", "COMPUTADORAS", "CORREOS SIRA"
+  "CAMARAS", "COMPUTADORAS", "CORREOS SIRA", "DATAROOM", "MAQUINAS VIRTUALES", "OTROS"
 ];
 
 export default function GestionContrasenas() {
