@@ -67,29 +67,67 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/passwords/export (Exportar todas las contraseñas en CSV, solo admin)
+// GET /api/passwords/export (Exportar todas las contraseñas en Excel, solo admin)
 router.get('/export', verifyToken, async (req, res) => {
     if (req.user.username !== process.env.ADMIN_USER) {
         return res.status(403).json({ error: 'Acceso denegado. Solo el administrador puede exportar.' });
     }
 
     try {
+        const xlsx = require('xlsx');
         const result = await pool.query('SELECT categoria, servicio_o_usuario, contrasena_hash, descripcion FROM contrasenas ORDER BY categoria, servicio_o_usuario');
         
-        let csvContent = '\uFEFFCategoría,Usuario o Servicio,Contraseña,Descripción\n'; // \uFEFF es el BOM para que Excel lea el UTF-8 correctamente
+        // Agrupar los resultados por categoría
+        const groupedByCategory = {};
         
         result.rows.forEach(row => {
             const pwd = decrypt(row.contrasena_hash) || '';
-            const escapeCSV = (str) => {
-                if (!str) return '""';
-                return `"${String(str).replace(/"/g, '""')}"`;
-            };
-            csvContent += `${escapeCSV(row.categoria)},${escapeCSV(row.servicio_o_usuario)},${escapeCSV(pwd)},${escapeCSV(row.descripcion)}\n`;
+            const cat = row.categoria || 'Sin Categoría';
+            
+            if (!groupedByCategory[cat]) {
+                groupedByCategory[cat] = [];
+            }
+            
+            groupedByCategory[cat].push({
+                'Servicio o Usuario': row.servicio_o_usuario,
+                'Contraseña': pwd,
+                'Descripción': row.descripcion
+            });
         });
 
-        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Content-Disposition', 'attachment; filename="respaldo_contrasenas.csv"');
-        res.status(200).send(csvContent);
+        // Crear un nuevo libro de Excel
+        const workbook = xlsx.utils.book_new();
+
+        // Si no hay datos, crear una hoja vacía
+        if (Object.keys(groupedByCategory).length === 0) {
+             const emptySheet = xlsx.utils.json_to_sheet([{ Mensaje: 'No hay contraseñas guardadas' }]);
+             xlsx.utils.book_append_sheet(workbook, emptySheet, 'Vacío');
+        } else {
+             // Crear una hoja por cada categoría
+             for (const [categoria, registros] of Object.entries(groupedByCategory)) {
+                 // Limitar el nombre de la hoja a 31 caracteres (límite de Excel) y quitar caracteres no válidos
+                 let sheetName = categoria.replace(/[\\/?*[\]]/g, '').substring(0, 31);
+                 if (!sheetName) sheetName = 'Hoja1';
+
+                 const worksheet = xlsx.utils.json_to_sheet(registros);
+                 
+                 // Ajustar ancho de columnas para que se vea mejor
+                 worksheet['!cols'] = [
+                     { wch: 30 }, // Servicio/Usuario
+                     { wch: 30 }, // Contraseña
+                     { wch: 40 }  // Descripción
+                 ];
+
+                 xlsx.utils.book_append_sheet(workbook, worksheet, sheetName);
+             }
+        }
+
+        // Generar el buffer del archivo Excel
+        const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename="respaldo_contrasenas.xlsx"');
+        res.status(200).send(buffer);
     } catch (err) {
         console.error('Error al exportar contraseñas:', err);
         res.status(500).json({ error: 'Error al exportar contraseñas' });

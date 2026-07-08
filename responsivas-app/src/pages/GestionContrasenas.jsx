@@ -148,7 +148,7 @@ export default function GestionContrasenas() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'respaldo_contrasenas.csv';
+      a.download = 'respaldo_contrasenas.xlsx';
       document.body.appendChild(a);
       a.click();
       a.remove();
