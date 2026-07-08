@@ -18,6 +18,10 @@ app.use('/api/auth', authRouter);
 const categoriasRouter = require('./routes/categorias');
 app.use('/api/categorias', categoriasRouter);
 
+// Nueva ruta para usuarios
+const usuariosRouter = require('./routes/usuarios');
+app.use('/api/usuarios', usuariosRouter);
+
 app.listen(3001, '0.0.0.0', () => {
   console.log('Servidor corriendo en http://192.168.1.12:3001')//esto se debe de cambiar en produccion a
 })

@@ -9,7 +9,8 @@ import {
   DocumentPlusIcon, 
   KeyIcon,
   Bars3Icon, 
-  XMarkIcon 
+  XMarkIcon,
+  UsersIcon
 } from '@heroicons/react/24/solid';
 import Header from '../components/Header';
 
@@ -23,6 +24,7 @@ const navigationLinks = [
   { type: 'separator' },
   { type: 'title', text: 'Módulo Seguridad' },
   { to: '/contrasenas', text: 'Gestionar Contraseñas', icon: KeyIcon, type: 'link' },
+  { to: '/usuarios', text: 'Gestionar Usuarios', icon: UsersIcon, type: 'link' },
 ];
 
 export default function DashboardLayout() {
