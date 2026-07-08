@@ -6,11 +6,11 @@ services:
     container_name: responsivas-db
     restart: always
     environment:
-      POSTGRES_USER: juan
-      POSTGRES_PASSWORD: claveSegura123
-      POSTGRES_DB: responsivas
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
     ports:
-      - "5432:5432"
+      - "${PGPORT}:${PGPORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
 

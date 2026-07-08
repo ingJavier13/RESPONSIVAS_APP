@@ -1,0 +1,10 @@
+# Node modules en cualquier carpeta
+node_modules/
+
+# Archivos de entorno
+.env
+
+# Logs de NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
