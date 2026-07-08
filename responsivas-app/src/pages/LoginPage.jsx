@@ -51,9 +51,9 @@ export default function LoginPage() {
       style={{ backgroundImage: "url('/grupoig.jpg')" }}
     >
       
-      <div className="w-full max-w-md space-y-8 px-4">
-        {/* Tarjeta del formulario con efecto de vidrio esmerilado */}
-        <div className="bg-white/80 backdrop-blur-md shadow-xl rounded-lg p-8">
+      <div className="w-full max-w-md space-y-8 px-4 relative z-10">
+        {/* Tarjeta del formulario con efecto de vidrio esmerilado premium */}
+        <div className="bg-white/70 backdrop-blur-2xl shadow-2xl rounded-3xl p-10 border border-white/50">
           <div className="text-center">
 
             {/* Logo centrado en la parte superior del formulario */}
@@ -80,10 +80,10 @@ export default function LoginPage() {
               <button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full flex justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:bg-slate-400"
+                className="btn-primary w-full flex justify-center py-3 text-base"
               >
                 {isLoading && <Spinner />}
-                {isLoading ? 'Iniciando...' : 'Entrar'}
+                {isLoading ? 'Iniciando...' : 'Entrar al Sistema'}
               </button>
             </div>
           </form>

@@ -75,12 +75,12 @@ export default function DashboardLayout() {
       {/* --- SIDEBAR --- */}
       <aside className={`fixed inset-y-0 left-0 bg-white w-64 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-300 ease-in-out border-r border-slate-200 z-40 flex-shrink-0`}>
         {/* ... (el resto del código del sidebar no cambia) ... */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100">
           <div className="flex items-center gap-x-3">
-            <img src="/respig.png" alt="Logo RESPIG" className="h-8 w-auto" />
-            <h1 className="text-xl font-bold text-green-600 tracking-wider">RESPIG</h1>
+            <img src="/respig.png" alt="Logo RESPIG" className="h-8 w-auto drop-shadow-sm" />
+            <h1 className="text-xl font-bold text-emerald-600 tracking-wider">RESPIG</h1>
           </div>
-          <button onClick={closeSidebar} className="md:hidden text-slate-500 hover:text-slate-800">
+          <button onClick={closeSidebar} className="md:hidden text-slate-400 hover:text-slate-600 transition-colors">
             <XMarkIcon className="h-6 w-6"/>
           </button>
         </div>
@@ -102,8 +102,8 @@ export default function DashboardLayout() {
                 const isActive = pathname === item.to;
                 return (
                   <li key={item.to}>
-                    <Link to={item.to} onClick={closeSidebar} className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ease-in-out ${ isActive ? 'bg-green-50 text-green-700 font-semibold border-l-4 border-green-500' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }`}>
-                      <Icon className="h-5 w-5 flex-shrink-0" />
+                    <Link to={item.to} onClick={closeSidebar} className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ease-in-out ${ isActive ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-sm ring-1 ring-emerald-500/20' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }`}>
+                      <Icon className={`h-5 w-5 flex-shrink-0 transition-colors ${isActive ? 'text-emerald-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
                       <span>{item.text}</span>
                     </Link>
                   </li>
@@ -116,17 +116,23 @@ export default function DashboardLayout() {
       </aside>
 
       {/* --- CONTENIDO PRINCIPAL --- */}
-      <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
-        <button 
-          onClick={() => setSidebarOpen(!isSidebarOpen)} 
-          className="md:hidden p-2 mb-4 rounded-md text-slate-500 bg-white shadow-sm"
-          aria-label="Abrir menú"
-        >
-          <Bars3Icon className="h-6 w-6" />
-        </button>
-        <div className="max-w-7xl mx-auto">
+      <main className="flex-1 overflow-y-auto">
+        <div className="md:hidden p-4 bg-white/70 backdrop-blur-md sticky top-0 z-20 border-b border-slate-200/50 flex items-center shadow-sm">
+          <button 
+            onClick={() => setSidebarOpen(!isSidebarOpen)} 
+            className="p-2 -ml-2 mr-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+            aria-label="Abrir menú"
+          >
+            <Bars3Icon className="h-6 w-6" />
+          </button>
+          <img src="/respig.png" alt="Logo" className="h-6 w-auto mr-2" />
+          <span className="font-bold text-emerald-600 tracking-wider">RESPIG</span>
+        </div>
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
           <Header pageTitle={pageTitle} />
-          <div className="bg-white p-6 rounded-lg shadow-sm mt-6">
+          {/* Outlet renderiza la página actual. Ya no necesitamos una tarjeta blanca genérica para todo, 
+              cada página (DashboardHome, GestionContrasenas) se encargará de dibujar sus propias tarjetas (cards) */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
              <Outlet />
           </div>
         </div>

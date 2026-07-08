@@ -26,12 +26,12 @@ export default function Header({ pageTitle = 'Dashboard' }) {
   };
 //se corrige el Menu.Item para que sea un botón estilizado que llama a la función.
   return (
-    <header className="bg-white shadow-sm mb-8 p-4 rounded-lg flex justify-between items-center">
-      <h1 className="text-2xl font-bold text-slate-800">{pageTitle}</h1>
+    <header className="sticky top-0 z-30 bg-white/70 backdrop-blur-md border-b border-slate-200/50 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 py-4 mb-8 flex justify-between items-center transition-all duration-300">
+      <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">{pageTitle}</h1>
       
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center items-center gap-x-2 rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+          <Menu.Button className="inline-flex w-full justify-center items-center gap-x-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors shadow-sm ring-1 ring-inset ring-slate-200">
             <UserCircleIcon className="h-7 w-7 text-slate-500" aria-hidden="true" />
             <span className="hidden sm:inline capitalize">{username}</span>
             <ChevronDownIcon className="h-5 w-5 text-slate-400" aria-hidden="true" />

@@ -225,36 +225,37 @@ export default function GestionContrasenas() {
         </div>
 
         {/* Tabla de Contraseñas */}
-        <div className="overflow-x-auto">
+        {/* Vista de Tabla para Escritorio */}
+        <div className="hidden md:block overflow-x-auto card">
           <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Usuario / Servicio</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Categoría</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Contraseña</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Acciones</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Usuario / Servicio</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Categoría</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Contraseña</th>
+                <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
+            <tbody className="bg-white divide-y divide-slate-100">
               {loading ? (
                 <tr><td colSpan="4"><KpiCardSkeleton /></td></tr>
               ) : (
                 filteredPasswords.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4"><div className="text-sm font-medium text-slate-900">{p.servicio_o_usuario}</div><div className="text-sm text-slate-500">{p.descripcion}</div></td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{p.categoria}</td>
-                    <td className="px-6 py-4 text-sm font-mono">
-                      <div className="flex items-center space-x-2">
-                        <span>{revealedPasswordId === p.id ? revealedPasswordText : '********'}</span>
-                        <button onClick={() => handleRevealPassword(p.id)} title="Mostrar/Ocultar" className="text-slate-400 hover:text-slate-600" disabled={isRevealing}>
+                  <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4"><div className="text-sm font-semibold text-slate-900">{p.servicio_o_usuario}</div><div className="text-sm text-slate-500 mt-1">{p.descripcion}</div></td>
+                    <td className="px-6 py-4"><span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">{p.categoria}</span></td>
+                    <td className="px-6 py-4 text-sm font-mono text-slate-600">
+                      <div className="flex items-center space-x-3">
+                        <span className="bg-slate-50 px-2 py-1 rounded border border-slate-100">{revealedPasswordId === p.id ? revealedPasswordText : '••••••••'}</span>
+                        <button onClick={() => handleRevealPassword(p.id)} title="Mostrar/Ocultar" className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors" disabled={isRevealing}>
                           {revealedPasswordId === p.id ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                         </button>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm">
-                      <div className="flex items-center space-x-4">
-                        <button onClick={() => openFormModal(p)} title="Editar" className="text-slate-500 hover:text-green-600"><PencilIcon className="h-5 w-5"/></button>
-                        <button onClick={() => openDeleteModal(p)} title="Eliminar" className="text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5"/></button>
+                    <td className="px-6 py-4 text-right text-sm">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button onClick={() => openFormModal(p)} title="Editar" className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><PencilIcon className="h-5 w-5"/></button>
+                        <button onClick={() => openDeleteModal(p)} title="Eliminar" className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><TrashIcon className="h-5 w-5"/></button>
                       </div>
                     </td>
                   </tr>
@@ -262,7 +263,47 @@ export default function GestionContrasenas() {
               )}
             </tbody>
           </table>
-          {!loading && filteredPasswords.length === 0 && (<p className="text-center text-slate-500 py-8">No se encontraron registros que coincidan con tu búsqueda.</p>)}
+          {!loading && filteredPasswords.length === 0 && (<p className="text-center text-slate-500 py-12">No se encontraron registros que coincidan con tu búsqueda.</p>)}
+        </div>
+
+        {/* Vista de Tarjetas para Móviles */}
+        <div className="md:hidden space-y-4 pb-12">
+          {loading ? (
+             <KpiCardSkeleton />
+          ) : filteredPasswords.length === 0 ? (
+             <div className="card p-8 text-center text-slate-500">No se encontraron contraseñas.</div>
+          ) : (
+             filteredPasswords.map(p => (
+               <div key={p.id} className="card p-5 space-y-4">
+                 <div className="flex justify-between items-start">
+                   <div className="pr-4">
+                     <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 mb-3">
+                       {p.categoria}
+                     </span>
+                     <h3 className="font-bold text-lg text-slate-900 leading-tight">{p.servicio_o_usuario}</h3>
+                   </div>
+                   <div className="flex space-x-1 shrink-0 bg-slate-50 p-1 rounded-lg border border-slate-100">
+                     <button onClick={() => openFormModal(p)} className="p-2 text-slate-400 hover:text-emerald-600 active:bg-emerald-50 rounded-md"><PencilIcon className="h-5 w-5"/></button>
+                     <button onClick={() => openDeleteModal(p)} className="p-2 text-slate-400 hover:text-red-600 active:bg-red-50 rounded-md"><TrashIcon className="h-5 w-5"/></button>
+                   </div>
+                 </div>
+                 {p.descripcion && <p className="text-sm text-slate-500 leading-relaxed">{p.descripcion}</p>}
+                 
+                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50 -mx-5 -mb-5 p-5">
+                    <div className="flex-1 overflow-hidden">
+                      {revealedPasswordId === p.id ? (
+                        <span className="font-mono text-sm bg-white px-3 py-1.5 rounded-md border border-slate-200 shadow-sm block truncate">{revealedPasswordText}</span>
+                      ) : (
+                        <span className="text-slate-400 text-sm tracking-widest font-mono">••••••••</span>
+                      )}
+                    </div>
+                    <button onClick={() => handleRevealPassword(p.id)} className="ml-4 flex items-center justify-center p-2 rounded-lg bg-white border border-slate-200 shadow-sm text-slate-600 hover:text-emerald-600 active:bg-slate-50 transition-colors">
+                      {revealedPasswordId === p.id ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                    </button>
+                 </div>
+               </div>
+             ))
+          )}
         </div>
       </div>
       
