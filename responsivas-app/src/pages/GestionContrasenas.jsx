@@ -1,7 +1,6 @@
-// GestionContrasenas.jsx
 import { useEffect, useState, useMemo } from 'react'; // React y hooks
 import toast from 'react-hot-toast'; // Para notificaciones
-import { PlusIcon, MagnifyingGlassIcon, TrashIcon, PencilIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid'; // Iconos
+import { PlusIcon, MagnifyingGlassIcon, TrashIcon, PencilIcon, EyeIcon, EyeSlashIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid'; // Iconos
 import FormularioContrasenaModal from '../components/FormularioContrasenaModal';
 import ModalConfirmacion from '../components/ModalConfirmacion'; // Modal genérico de confirmación
 import { KpiCardSkeleton } from '../components/KpiCard'; // Skeleton para carga
@@ -30,6 +29,20 @@ export default function GestionContrasenas() {
   const [revealedPasswordId, setRevealedPasswordId] = useState(null);
   const [revealedPasswordText, setRevealedPasswordText] = useState('');
   const [isRevealing, setIsRevealing] = useState(false);
+
+  // Verificar si es admin
+  const isSuperAdmin = useMemo(() => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.username === 'admin' || payload.userId === 'admin-env';
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }, []);
 
   // --- Lógica de Filtrado ---
   const filteredPasswords = useMemo(() => {
@@ -120,6 +133,31 @@ export default function GestionContrasenas() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://192.168.1.12:3001/api/passwords/export', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) {
+        throw new Error('Error al exportar contraseñas');
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'respaldo_contrasenas.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.success('Descarga iniciada');
+    } catch (e) {
+      toast.error('No tienes permisos para exportar o hubo un error.');
+    }
+  };
+
   // --- Funciones para controlar los modales ---
   const openFormModal = (password = null) => {
     setEditingPassword(password);
@@ -169,7 +207,17 @@ export default function GestionContrasenas() {
               </button>
             </div>
           </div>
-          <div className="md:col-span-1 flex justify-end">
+          <div className="md:col-span-1 flex justify-end gap-2">
+            {isSuperAdmin && (
+              <button 
+                type="button" 
+                onClick={handleExport}
+                className="w-full md:w-auto flex items-center justify-center gap-x-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500"
+                title="Exportar a CSV"
+              >
+                <ArrowDownTrayIcon className="h-5 w-5" />Exportar
+              </button>
+            )}
             <button type="button" onClick={() => openFormModal()} className="w-full md:w-auto flex items-center justify-center gap-x-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
               <PlusIcon className="h-5 w-5" />Añadir Contraseña
             </button>

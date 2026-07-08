@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const crypto = require('crypto');
+const verifyToken = require('../middleware/verifyToken');
 require('dotenv').config();
 
 // --- Configuración de Cifrado ---
@@ -64,6 +65,35 @@ router.get('/', async (req, res) => {
     console.error('Error al obtener la lista de contraseñas:', err);
     res.status(500).json({ error: 'Error al obtener la lista de contraseñas' });
   }
+});
+
+// GET /api/passwords/export (Exportar todas las contraseñas en CSV, solo admin)
+router.get('/export', verifyToken, async (req, res) => {
+    if (req.user.username !== process.env.ADMIN_USER) {
+        return res.status(403).json({ error: 'Acceso denegado. Solo el administrador puede exportar.' });
+    }
+
+    try {
+        const result = await pool.query('SELECT categoria, servicio_o_usuario, contrasena_hash, descripcion FROM contrasenas ORDER BY categoria, servicio_o_usuario');
+        
+        let csvContent = '\uFEFFCategoría,Usuario o Servicio,Contraseña,Descripción\n'; // \uFEFF es el BOM para que Excel lea el UTF-8 correctamente
+        
+        result.rows.forEach(row => {
+            const pwd = decrypt(row.contrasena_hash) || '';
+            const escapeCSV = (str) => {
+                if (!str) return '""';
+                return `"${String(str).replace(/"/g, '""')}"`;
+            };
+            csvContent += `${escapeCSV(row.categoria)},${escapeCSV(row.servicio_o_usuario)},${escapeCSV(pwd)},${escapeCSV(row.descripcion)}\n`;
+        });
+
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', 'attachment; filename="respaldo_contrasenas.csv"');
+        res.status(200).send(csvContent);
+    } catch (err) {
+        console.error('Error al exportar contraseñas:', err);
+        res.status(500).json({ error: 'Error al exportar contraseñas' });
+    }
 });
 
 // GET /api/passwords/:id/reveal (Revelar una contraseña específica)
