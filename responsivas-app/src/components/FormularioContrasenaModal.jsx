@@ -4,16 +4,9 @@ import { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import toast from 'react-hot-toast';
 
-// Lista de categorías disponibles
-const CATEGORIAS = [
-  "CORREOS HOSTING", "CORREO LICENCIA OFFICE", "SCRIPTCASE", 
-  "VPN Y SERVIDOR", "ZKTIME", "TABLETS", "CARPETAS COMPARTIDAS", 
-  "CAMARAS", "COMPUTADORAS", "CORREOS SIRA", "DATAROOM", "MAQUINAS VIRTUALES", "OTROS"
-];
-
-export default function FormularioContrasenaModal({ isOpen, onClose, onPasswordAdded, onPasswordUpdated, editingPassword }) {
+export default function FormularioContrasenaModal({ isOpen, onClose, onPasswordAdded, onPasswordUpdated, editingPassword, categorias = [] }) {
   const [formData, setFormData] = useState({
-    categoria: CATEGORIAS[0],
+    categoria: categorias.length > 0 ? categorias[0].nombre : '',
     servicio_o_usuario: '',
     contrasena: '',
     descripcion: ''
@@ -37,7 +30,7 @@ export default function FormularioContrasenaModal({ isOpen, onClose, onPasswordA
     // Si no, resetea el formulario a sus valores por defecto
     else if (!isOpen) {
       setFormData({
-        categoria: CATEGORIAS[0], 
+        categoria: categorias.length > 0 ? categorias[0].nombre : '', 
         servicio_o_usuario: '', 
         contrasena: '', 
         descripcion: ''
@@ -115,7 +108,7 @@ export default function FormularioContrasenaModal({ isOpen, onClose, onPasswordA
                   <div>
                     <label htmlFor="categoria" className="block text-sm font-medium text-slate-700">Categoría</label>
                     <select name="categoria" id="categoria" value={formData.categoria} onChange={handleChange} className="input mt-1">
-                      {CATEGORIAS.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      {categorias.map(cat => <option key={cat.id} value={cat.nombre}>{cat.nombre}</option>)}
                     </select>
                   </div>
                   <div>

@@ -14,6 +14,10 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/passwords', passwordsRouter)
 app.use('/api/auth', authRouter);
 
+// Nueva ruta para categorías
+const categoriasRouter = require('./routes/categorias');
+app.use('/api/categorias', categoriasRouter);
+
 app.listen(3001, '0.0.0.0', () => {
   console.log('Servidor corriendo en http://192.168.1.12:3001')//esto se debe de cambiar en produccion a
 })

@@ -5,13 +5,7 @@ import { PlusIcon, MagnifyingGlassIcon, TrashIcon, PencilIcon, EyeIcon, EyeSlash
 import FormularioContrasenaModal from '../components/FormularioContrasenaModal';
 import ModalConfirmacion from '../components/ModalConfirmacion'; // Modal genérico de confirmación
 import { KpiCardSkeleton } from '../components/KpiCard'; // Skeleton para carga
-
-// Lista de categorías disponibles (mantener consistente con FormularioContrasenaModal)
-const CATEGORIAS = [
-  "CORREOS HOSTING", "CORREO LICENCIA OFFICE", "SCRIPTCASE", 
-  "VPN Y SERVIDOR", "ZKTIME", "TABLETS", "CARPETAS COMPARTIDAS", 
-  "CAMARAS", "COMPUTADORAS", "CORREOS SIRA", "DATAROOM", "MAQUINAS VIRTUALES", "OTROS"
-];
+import GestionCategoriasModal from '../components/GestionCategoriasModal';
 
 export default function GestionContrasenas() {
   // --- Estados del Componente ---
@@ -23,6 +17,10 @@ export default function GestionContrasenas() {
   const [editingPassword, setEditingPassword] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [passwordToDelete, setPasswordToDelete] = useState(null);
+  const [isGestionCategoriasOpen, setIsGestionCategoriasOpen] = useState(false);
+
+  // Estados para categorías dinámicas
+  const [categoriasList, setCategoriasList] = useState([]);
 
   // Estados para los filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,6 +44,17 @@ export default function GestionContrasenas() {
   }, [passwords, searchTerm, selectedCategory]);
 
   // --- Cargar Datos Iniciales ---
+  const fetchCategorias = async () => {
+    try {
+      const res = await fetch('http://192.168.1.12:3001/api/categorias');
+      const data = await res.json();
+      setCategoriasList(data);
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+      toast.error('No se pudieron cargar las categorías.');
+    }
+  };
+
   useEffect(() => {
     const fetchPasswords = async () => {
       try {
@@ -61,6 +70,7 @@ export default function GestionContrasenas() {
       }
     };
     fetchPasswords();
+    fetchCategorias();
   }, []);
   
   // --- Funciones Handler para CRUD ---
@@ -144,12 +154,22 @@ export default function GestionContrasenas() {
           </div>
           <div className="md:col-span-1">
             <label htmlFor="category" className="block text-sm font-medium text-slate-700">Categoría</label>
-            <select id="category" name="category" className="input mt-1" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-              <option>Todas</option>
-              {CATEGORIAS.sort().map(cat => <option key={cat}>{cat}</option>)}
-            </select>
+            <div className="flex mt-1 gap-2">
+              <select id="category" name="category" className="input flex-1" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+                <option>Todas</option>
+                {categoriasList.map(cat => <option key={cat.id} value={cat.nombre}>{cat.nombre}</option>)}
+              </select>
+              <button 
+                type="button" 
+                onClick={() => setIsGestionCategoriasOpen(true)}
+                className="flex items-center justify-center rounded-md bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-200"
+                title="Gestionar Categorías"
+              >
+                <PencilIcon className="h-5 w-5" />
+              </button>
+            </div>
           </div>
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 flex justify-end">
             <button type="button" onClick={() => openFormModal()} className="w-full md:w-auto flex items-center justify-center gap-x-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
               <PlusIcon className="h-5 w-5" />Añadir Contraseña
             </button>
@@ -205,6 +225,14 @@ export default function GestionContrasenas() {
         onPasswordAdded={handlePasswordAdded}
         onPasswordUpdated={handlePasswordUpdated}
         editingPassword={editingPassword}
+        categorias={categoriasList}
+      />
+      
+      <GestionCategoriasModal
+        isOpen={isGestionCategoriasOpen}
+        onClose={() => setIsGestionCategoriasOpen(false)}
+        categorias={categoriasList}
+        fetchCategorias={fetchCategorias}
       />
       
       <ModalConfirmacion
