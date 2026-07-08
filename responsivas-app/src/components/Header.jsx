@@ -5,6 +5,20 @@ import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 
 export default function Header({ pageTitle = 'Dashboard' }) {
+  // Extraer el nombre de usuario del token JWT
+  let username = 'Usuario';
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.username) {
+        username = payload.username;
+      }
+    }
+  } catch (e) {
+    console.error('Error decodificando el token:', e);
+  }
+
   // Se Mueve la función handleLogout aquí, al nivel principal del componente.
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -19,7 +33,7 @@ export default function Header({ pageTitle = 'Dashboard' }) {
         <div>
           <Menu.Button className="inline-flex w-full justify-center items-center gap-x-2 rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
             <UserCircleIcon className="h-7 w-7 text-slate-500" aria-hidden="true" />
-            <span className="hidden sm:inline">Javier Romo</span>
+            <span className="hidden sm:inline capitalize">{username}</span>
             <ChevronDownIcon className="h-5 w-5 text-slate-400" aria-hidden="true" />
           </Menu.Button>
         </div>
