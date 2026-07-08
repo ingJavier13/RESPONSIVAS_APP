@@ -138,36 +138,68 @@ export default function VerResponsivas() {
       ) : responsivas.length === 0 ? (
         <p className="text-center text-slate-500 mt-8">No se encontraron responsivas {searchTerm && 'que coincidan con tu búsqueda'}.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
-              <tr>
-                {['Responsable', 'Tipo', 'Marca', 'Estado', 'Fecha de Creación', 'Acciones'].map(header => (
-                  <th key={header} scope="col" className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {responsivas.map((r) => (
-                <tr key={r.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{r.responsable}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{r.tipo_equipo}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{r.marca}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600"><EstadoBadge estado={r.estado} /></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{formatearFecha(r.fecha)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                     <div className="flex items-center space-x-4">
-                       {r.archivo_pdf ? ( <a href={`http://192.168.1.12:3001/uploads/${r.archivo_pdf}`} target="_blank" rel="noopener noreferrer" title="Ver responsiva firmada" className="text-slate-500 hover:text-blue-600"><DocumentCheckIcon className="h-5 w-5" /></a> ) : ( <div className="w-5 h-5" /> )}
-                       <button onClick={() => abrirModal(r.id)} title="Eliminar" className="text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5"/></button>
-                     </div>
-                  </td>
+        <>
+          {/* Vista de Tabla para Escritorio */}
+          <div className="hidden md:block overflow-x-auto card">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  {['Responsable', 'Equipo', 'Marca', 'Estado', 'Fecha de Creación', 'Acciones'].map(header => (
+                    <th key={header} scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      {header}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-slate-100">
+                {responsivas.map((r) => (
+                  <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">{r.responsable}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{r.tipo_equipo}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{r.marca}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm"><EstadoBadge estado={r.estado} /></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{formatearFecha(r.fecha)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                       <div className="flex items-center justify-end space-x-2">
+                         {r.archivo_pdf ? ( <a href={`http://192.168.1.12:3001/uploads/${r.archivo_pdf}`} target="_blank" rel="noopener noreferrer" title="Ver responsiva firmada" className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><DocumentCheckIcon className="h-5 w-5" /></a> ) : ( <div className="w-9 h-9" /> )}
+                         <button onClick={() => abrirModal(r.id)} title="Eliminar" className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><TrashIcon className="h-5 w-5"/></button>
+                       </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Vista de Tarjetas para Móviles */}
+          <div className="md:hidden space-y-4 pb-12">
+            {responsivas.map((r) => (
+              <div key={r.id} className="card p-5 space-y-4">
+                 <div className="flex justify-between items-start">
+                   <div className="pr-4">
+                     <div className="mb-2"><EstadoBadge estado={r.estado} /></div>
+                     <h3 className="font-bold text-lg text-slate-900 leading-tight">{r.responsable}</h3>
+                     <p className="text-sm text-slate-500 mt-1">{r.tipo_equipo} • {r.marca}</p>
+                   </div>
+                   <div className="flex flex-col space-y-2 shrink-0">
+                     {r.archivo_pdf && (
+                       <a href={`http://192.168.1.12:3001/uploads/${r.archivo_pdf}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg flex items-center justify-center transition-colors">
+                         <DocumentCheckIcon className="h-5 w-5" />
+                       </a>
+                     )}
+                     <button onClick={() => abrirModal(r.id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg flex items-center justify-center transition-colors">
+                       <TrashIcon className="h-5 w-5" />
+                     </button>
+                   </div>
+                 </div>
+                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-sm bg-slate-50/50 -mx-5 -mb-5 p-5">
+                   <span className="text-slate-500">Fecha de Creación</span>
+                   <span className="font-medium text-slate-700">{formatearFecha(r.fecha)}</span>
+                 </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* --- Modal de Confirmación --- */}

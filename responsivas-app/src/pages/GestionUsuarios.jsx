@@ -103,29 +103,30 @@ export default function GestionUsuarios() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Vista de Tabla para Escritorio */}
+        <div className="hidden md:block overflow-x-auto card">
           <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Nombre de Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Acciones</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de Usuario</th>
+                <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
+            <tbody className="bg-white divide-y divide-slate-100">
               {loading ? (
                 <tr><td colSpan="3"><KpiCardSkeleton /></td></tr>
               ) : (
                 filteredUsuarios.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 text-sm text-slate-500">{u.id}</td>
+                  <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4 text-sm font-medium text-slate-500">#{u.id}</td>
                     <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-slate-900">{u.username}</div>
+                        <div className="text-sm font-bold text-slate-900">{u.username}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm">
-                      <div className="flex items-center space-x-4">
-                        <button onClick={() => openFormModal(u)} title="Editar Contraseña/Nombre" className="text-slate-500 hover:text-green-600"><PencilIcon className="h-5 w-5"/></button>
-                        <button onClick={() => openDeleteModal(u)} title="Eliminar" className="text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5"/></button>
+                    <td className="px-6 py-4 text-right text-sm">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button onClick={() => openFormModal(u)} title="Editar Contraseña/Nombre" className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"><PencilIcon className="h-5 w-5"/></button>
+                        <button onClick={() => openDeleteModal(u)} title="Eliminar" className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><TrashIcon className="h-5 w-5"/></button>
                       </div>
                     </td>
                   </tr>
@@ -133,7 +134,29 @@ export default function GestionUsuarios() {
               )}
             </tbody>
           </table>
-          {!loading && filteredUsuarios.length === 0 && (<p className="text-center text-slate-500 py-8">No se encontraron usuarios.</p>)}
+          {!loading && filteredUsuarios.length === 0 && (<p className="text-center text-slate-500 py-12">No se encontraron usuarios.</p>)}
+        </div>
+
+        {/* Vista de Tarjetas para Móviles */}
+        <div className="md:hidden space-y-4 pb-12">
+          {loading ? (
+             <KpiCardSkeleton />
+          ) : filteredUsuarios.length === 0 ? (
+             <div className="card p-8 text-center text-slate-500">No se encontraron usuarios.</div>
+          ) : (
+             filteredUsuarios.map(u => (
+               <div key={u.id} className="card p-5 flex justify-between items-center">
+                 <div>
+                   <span className="text-xs font-medium text-slate-400 block mb-1">ID: #{u.id}</span>
+                   <h3 className="font-bold text-lg text-slate-900">{u.username}</h3>
+                 </div>
+                 <div className="flex space-x-1 shrink-0 bg-slate-50 p-1 rounded-lg border border-slate-100">
+                   <button onClick={() => openFormModal(u)} className="p-2 text-slate-400 hover:text-emerald-600 active:bg-emerald-50 rounded-md"><PencilIcon className="h-5 w-5"/></button>
+                   <button onClick={() => openDeleteModal(u)} className="p-2 text-slate-400 hover:text-red-600 active:bg-red-50 rounded-md"><TrashIcon className="h-5 w-5"/></button>
+                 </div>
+               </div>
+             ))
+          )}
         </div>
       </div>
       
