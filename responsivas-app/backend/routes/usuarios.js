@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 // GET /api/usuarios
 router.get('/', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, username FROM usuarios ORDER BY username ASC');
+        const result = await pool.query('SELECT id, username, permisos FROM usuarios ORDER BY username ASC');
         res.json(result.rows);
     } catch (err) {
         console.error('Error al obtener usuarios:', err);
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 // POST /api/usuarios
 router.post('/', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, permisos } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: 'El nombre de usuario y contraseña son obligatorios' });
     }
@@ -24,10 +24,11 @@ router.post('/', async (req, res) => {
     try {
         const saltRounds = 10;
         const passwordHash = await bcrypt.hash(password, saltRounds);
+        const permisosStr = permisos || '';
 
         const result = await pool.query(
-            'INSERT INTO usuarios (username, password_hash) VALUES ($1, $2) RETURNING id, username',
-            [username.trim(), passwordHash]
+            'INSERT INTO usuarios (username, password_hash, permisos) VALUES ($1, $2, $3) RETURNING id, username, permisos',
+            [username.trim(), passwordHash, permisosStr]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -42,27 +43,28 @@ router.post('/', async (req, res) => {
 // PUT /api/usuarios/:id
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { username, password } = req.body;
+    const { username, password, permisos } = req.body;
 
     if (!username) {
         return res.status(400).json({ error: 'El nombre de usuario es obligatorio' });
     }
 
     try {
+        const permisosStr = permisos || '';
         if (password && password.trim() !== '') {
             const saltRounds = 10;
             const passwordHash = await bcrypt.hash(password, saltRounds);
             
             const result = await pool.query(
-                'UPDATE usuarios SET username = $1, password_hash = $2 WHERE id = $3 RETURNING id, username',
-                [username.trim(), passwordHash, id]
+                'UPDATE usuarios SET username = $1, password_hash = $2, permisos = $3 WHERE id = $4 RETURNING id, username, permisos',
+                [username.trim(), passwordHash, permisosStr, id]
             );
             if (result.rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
             res.json(result.rows[0]);
         } else {
             const result = await pool.query(
-                'UPDATE usuarios SET username = $1 WHERE id = $2 RETURNING id, username',
-                [username.trim(), id]
+                'UPDATE usuarios SET username = $1, permisos = $2 WHERE id = $3 RETURNING id, username, permisos',
+                [username.trim(), permisosStr, id]
             );
             if (result.rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
             res.json(result.rows[0]);

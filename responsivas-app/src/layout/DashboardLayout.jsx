@@ -1,5 +1,5 @@
 //src/layout/DashboardLayout.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast'; // <-- 1. AÑADE ESTA LÍNEA DE NUEVO
 import { 
@@ -16,20 +16,38 @@ import Header from '../components/Header';
 
 const navigationLinks = [
   { to: '/', text: 'Inicio', icon: HomeIcon, type: 'link' },
-  { type: 'separator' },
-  { type: 'title', text: 'Módulo Responsivas' },
-  { to: '/crear', text: 'Nueva Responsiva', icon: PlusIcon, type: 'link' },
-  { to: '/ver', text: 'Ver Responsivas', icon: DocumentTextIcon, type: 'link' },
-  { to: '/subir', text: 'Responsiva Firmada', icon: DocumentPlusIcon, type: 'link' },
-  { type: 'separator' },
-  { type: 'title', text: 'Módulo Seguridad' },
-  { to: '/contrasenas', text: 'Gestionar Contraseñas', icon: KeyIcon, type: 'link' },
-  { to: '/usuarios', text: 'Gestionar Usuarios', icon: UsersIcon, type: 'link' },
+  { type: 'separator', module: 'responsivas' },
+  { type: 'title', text: 'Módulo Responsivas', module: 'responsivas' },
+  { to: '/crear', text: 'Nueva Responsiva', icon: PlusIcon, type: 'link', module: 'responsivas' },
+  { to: '/ver', text: 'Ver Responsivas', icon: DocumentTextIcon, type: 'link', module: 'responsivas' },
+  { to: '/subir', text: 'Responsiva Firmada', icon: DocumentPlusIcon, type: 'link', module: 'responsivas' },
+  { type: 'separator', module: 'seguridad' },
+  { type: 'title', text: 'Módulo Seguridad', module: 'seguridad' },
+  { to: '/contrasenas', text: 'Gestionar Contraseñas', icon: KeyIcon, type: 'link', module: 'contrasenas' },
+  { to: '/usuarios', text: 'Gestionar Usuarios', icon: UsersIcon, type: 'link', module: 'usuarios' },
 ];
 
 export default function DashboardLayout() {
   const { pathname } = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  
+  const [userPermisos, setUserPermisos] = useState([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setIsSuperAdmin(payload.userId === 'admin-env' || payload.username === 'admin');
+        if (payload.permisos) {
+          setUserPermisos(payload.permisos.split(','));
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   const currentLink = navigationLinks.find((link) => link.to === pathname);
   const pageTitle = currentLink ? currentLink.text : 'Dashboard';
@@ -69,6 +87,14 @@ export default function DashboardLayout() {
         <nav className="overflow-y-auto p-4">
           <ul className="space-y-1">
             {navigationLinks.map((item, index) => {
+              // Filtrado por permisos
+              if (!isSuperAdmin) {
+                if (item.module === 'usuarios') return null;
+                if (item.module === 'responsivas' && !userPermisos.includes('responsivas')) return null;
+                if (item.module === 'contrasenas' && !userPermisos.includes('contrasenas')) return null;
+                if (item.module === 'seguridad' && !userPermisos.includes('contrasenas')) return null; // Oculta titulo/separador de seguridad
+              }
+
               if (item.type === 'separator') { return <li key={`sep-${index}`}><hr className="my-2 border-slate-200" /></li>; }
               if (item.type === 'title') { return <li key={`title-${index}`} className="px-4 pt-4 pb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">{item.text}</li>; }
               if (item.type === 'link') {

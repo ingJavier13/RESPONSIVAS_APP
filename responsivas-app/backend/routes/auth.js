@@ -23,7 +23,7 @@ router.post('/login', async (req, res) => {
 
       // Si todo esta correcto, crea un token
       const token = jwt.sign(
-        { userId: 'admin-env', username: process.env.ADMIN_USER }, // Payload del token
+        { userId: 'admin-env', username: process.env.ADMIN_USER, permisos: 'all' }, // Payload del token
         process.env.JWT_SECRET, // Tu clave secreta
         { expiresIn: '8h' } // El token expira en 8 horas
       );
@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: dbUser.id, username: dbUser.username }, 
+      { userId: dbUser.id, username: dbUser.username, permisos: dbUser.permisos || '' }, 
       process.env.JWT_SECRET, 
       { expiresIn: '8h' } 
     );

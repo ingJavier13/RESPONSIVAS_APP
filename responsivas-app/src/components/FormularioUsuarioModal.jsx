@@ -5,7 +5,8 @@ import toast from 'react-hot-toast';
 export default function FormularioUsuarioModal({ isOpen, onClose, onUserAdded, onUserUpdated, editingUser }) {
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
+    permisos: []
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,12 +17,14 @@ export default function FormularioUsuarioModal({ isOpen, onClose, onUserAdded, o
     if (isEditing && isOpen) {
       setFormData({
         username: editingUser.username,
-        password: '' // Contraseña en blanco al editar por seguridad
+        password: '', // Contraseña en blanco al editar por seguridad
+        permisos: editingUser.permisos ? editingUser.permisos.split(',').filter(Boolean) : []
       });
     } else if (!isOpen) {
       setFormData({
         username: '',
-        password: ''
+        password: '',
+        permisos: []
       });
       setError('');
     }
@@ -52,11 +55,18 @@ export default function FormularioUsuarioModal({ isOpen, onClose, onUserAdded, o
     const method = isEditing ? 'PUT' : 'POST';
 
     setLoading(true);
+    
+    // Preparar payload
+    const payload = {
+        ...formData,
+        permisos: formData.permisos.join(',')
+    };
+
     try {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -124,6 +134,42 @@ export default function FormularioUsuarioModal({ isOpen, onClose, onUserAdded, o
                       className="input mt-1" 
                       disabled={loading}
                     />
+                  </div>
+
+                  <div className="mt-4 p-3 border border-slate-200 rounded-md bg-slate-50">
+                    <span className="block text-sm font-semibold text-slate-700 mb-2">Permisos de Módulos</span>
+                    <div className="space-y-2">
+                      <label className="flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.permisos.includes('responsivas')} 
+                          onChange={(e) => {
+                            const newPerms = e.target.checked 
+                              ? [...formData.permisos, 'responsivas']
+                              : formData.permisos.filter(p => p !== 'responsivas');
+                            setFormData({...formData, permisos: newPerms});
+                          }}
+                          className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          disabled={loading}
+                        />
+                        <span className="text-sm text-slate-700">Módulo Responsivas <span className="text-xs text-slate-500">(Crear, Ver, Subir)</span></span>
+                      </label>
+                      <label className="flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.permisos.includes('contrasenas')} 
+                          onChange={(e) => {
+                            const newPerms = e.target.checked 
+                              ? [...formData.permisos, 'contrasenas']
+                              : formData.permisos.filter(p => p !== 'contrasenas');
+                            setFormData({...formData, permisos: newPerms});
+                          }}
+                          className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          disabled={loading}
+                        />
+                        <span className="text-sm text-slate-700">Módulo Contraseñas <span className="text-xs text-slate-500">(Gestionar)</span></span>
+                      </label>
+                    </div>
                   </div>
 
                   {error && <p className="text-sm text-red-600">{error}</p>}
