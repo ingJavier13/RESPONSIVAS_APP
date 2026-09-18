@@ -151,7 +151,7 @@ export default function GestionLicencias() {
                 <h2 className="text-xl font-bold text-slate-800">Gestión de Licencias y Suscripciones</h2>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    className="btn-primary flex items-center gap-2"
                 >
                     <PlusIcon className="h-5 w-5" />
                     Nueva Licencia
@@ -256,7 +256,7 @@ export default function GestionLicencias() {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+                                    className="input"
                                     value={formData.servicio}
                                     onChange={(e) => setFormData({...formData, servicio: e.target.value})}
                                     placeholder="Ej. Hostinger, Microsoft 365"
@@ -267,7 +267,7 @@ export default function GestionLicencias() {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+                                    className="input"
                                     value={formData.proveedor}
                                     onChange={(e) => setFormData({...formData, proveedor: e.target.value})}
                                 />
@@ -275,7 +275,7 @@ export default function GestionLicencias() {
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Frecuencia de Pago</label>
                                 <select
-                                    className="w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+                                    className="input"
                                     value={formData.frecuencia_pago}
                                     onChange={(e) => setFormData({...formData, frecuencia_pago: e.target.value})}
                                 >
@@ -288,7 +288,7 @@ export default function GestionLicencias() {
                                 <input
                                     type="date"
                                     required
-                                    className="w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+                                    className="input"
                                     value={formData.fecha_vencimiento}
                                     onChange={(e) => setFormData({...formData, fecha_vencimiento: e.target.value})}
                                 />
@@ -297,7 +297,7 @@ export default function GestionLicencias() {
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Estado</label>
                                     <select
-                                        className="w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+                                        className="input"
                                         value={formData.estado}
                                         onChange={(e) => setFormData({...formData, estado: e.target.value})}
                                     >
@@ -306,17 +306,17 @@ export default function GestionLicencias() {
                                     </select>
                                 </div>
                             )}
-                            <div className="mt-6 flex justify-end gap-3">
+                            <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-slate-100">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50"
+                                    className="btn-secondary"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-md hover:bg-emerald-700"
+                                    className="btn-primary"
                                 >
                                     {isEdit ? 'Actualizar' : 'Guardar'}
                                 </button>

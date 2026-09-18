@@ -1,15 +1,22 @@
 // src/components/KpiCard.jsx
 
-export default function KpiCard({ title, value, icon: Icon, colorClass }) {
+export default function KpiCard({ title, value, icon: Icon, colorClass, children }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm flex items-start justify-between">
-      <div>
-        <p className="text-sm font-medium text-slate-500">{title}</p>
-        <p className="text-3xl font-bold text-slate-800 mt-1">{value}</p>
+    <div className="bg-white p-6 rounded-lg shadow-sm flex flex-col justify-between h-full">
+      <div className="flex items-start justify-between w-full">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <p className="text-3xl font-bold text-slate-800 mt-1">{value}</p>
+        </div>
+        <div className={`flex-shrink-0 p-3 rounded-full ${colorClass}`}>
+          <Icon className="h-6 w-6 text-white" />
+        </div>
       </div>
-      <div className={`flex-shrink-0 p-3 rounded-full ${colorClass}`}>
-        <Icon className="h-6 w-6 text-white" />
-      </div>
+      {children && (
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon } from
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ total: 0, faltantes: 0 });
-  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0 });
+  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0, proximaVencerItem: null });
   const [recienteResponsiva, setRecienteResponsiva] = useState(null);
   const [recientePassword, setRecientePassword] = useState(null); // 1. Nuevo estado
   const [loading, setLoading] = useState(true);
@@ -84,7 +84,19 @@ export default function DashboardHome() {
           value={licenciasStats.porVencer} 
           icon={ClockIcon}
           colorClass="bg-yellow-500"
-        />
+        >
+          {licenciasStats.proximaVencerItem ? (
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Próxima a vencer:</span>
+              <span className="text-sm font-medium text-slate-800">{licenciasStats.proximaVencerItem.servicio}</span>
+              <span className="text-sm text-yellow-600 font-semibold mt-0.5">
+                {formatearFecha(licenciasStats.proximaVencerItem.fecha_vencimiento)}
+              </span>
+            </div>
+          ) : (
+            <span className="text-sm text-slate-400 italic">Todo al día</span>
+          )}
+        </KpiCard>
         <KpiCard 
           title="Licencias Vencidas" 
           value={licenciasStats.vencidas} 

@@ -107,10 +107,20 @@ router.get('/kpis/stats', async (req, res) => {
         // Total
         const total = await pool.query('SELECT COUNT(*) FROM licencias');
 
+        // Licencia más próxima a vencer (solo activa)
+        const proxima = await pool.query(`
+            SELECT servicio, proveedor, fecha_vencimiento 
+            FROM licencias 
+            WHERE estado = 'activo' AND fecha_vencimiento >= CURRENT_DATE
+            ORDER BY fecha_vencimiento ASC 
+            LIMIT 1
+        `);
+
         res.json({
             porVencer: parseInt(porVencer.rows[0].count),
             vencidas: parseInt(vencidas.rows[0].count),
-            total: parseInt(total.rows[0].count)
+            total: parseInt(total.rows[0].count),
+            proximaVencerItem: proxima.rows.length > 0 ? proxima.rows[0] : null
         });
     } catch (error) {
         console.error(error);
