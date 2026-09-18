@@ -88,7 +88,14 @@ export default function DashboardHome() {
           {licenciasStats.proximaVencerItem ? (
             <div className="flex flex-col">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Próxima a vencer:</span>
-              <span className="text-sm font-medium text-slate-800">{licenciasStats.proximaVencerItem.servicio}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-800">{licenciasStats.proximaVencerItem.servicio}</span>
+                {licenciasStats.proximaVencerItem.tipo_servicio_nombre && (
+                  <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-xs border border-slate-200">
+                    {licenciasStats.proximaVencerItem.tipo_servicio_nombre}
+                  </span>
+                )}
+              </div>
               <span className="text-sm text-yellow-600 font-semibold mt-0.5">
                 {formatearFecha(licenciasStats.proximaVencerItem.fecha_vencimiento)}
               </span>
