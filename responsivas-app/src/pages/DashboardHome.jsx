@@ -6,7 +6,7 @@ import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon, Excla
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ total: 0, faltantes: 0 });
-  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0, activas: 0, proximaVencerItem: null, vencidaItem: null });
+  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0, activas: 0, activasPorProveedor: [], proximaVencerItem: null, vencidaItem: null });
   const [recienteResponsiva, setRecienteResponsiva] = useState(null);
   const [recientePassword, setRecientePassword] = useState(null); // 1. Nuevo estado
   const [loading, setLoading] = useState(true);
@@ -98,7 +98,27 @@ export default function DashboardHome() {
           value={licenciasStats.activas}
           icon={ShieldCheckIcon}
           colorClass="bg-indigo-500"
-        />
+        >
+          {licenciasStats.activasPorProveedor && licenciasStats.activasPorProveedor.length > 0 ? (
+            <div className="mt-2 pt-2 border-t border-slate-100">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Por Proveedor:</span>
+              <div className="max-h-32 overflow-y-auto pr-1 space-y-1 scrollbar-thin scrollbar-thumb-slate-200">
+                {licenciasStats.activasPorProveedor.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center text-sm py-1 border-b border-slate-50 last:border-0">
+                    <span className="text-slate-600 truncate mr-2" title={item.proveedor_nombre || 'Sin Proveedor'}>
+                      {item.proveedor_nombre || 'Sin Proveedor'}
+                    </span>
+                    <span className="font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-full text-xs">
+                      {item.cantidad}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <span className="text-sm text-slate-400 italic">No hay licencias activas</span>
+          )}
+        </KpiCard>
         <KpiCard
           title="Licencias por Vencer"
           value={licenciasStats.porVencer}

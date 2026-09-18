@@ -116,6 +116,16 @@ router.get('/kpis/stats', async (req, res) => {
         // Total activas
         const activas = await pool.query("SELECT COUNT(*) FROM licencias WHERE estado = 'activo'");
 
+        // Desglose de activas por proveedor
+        const activasPorProveedor = await pool.query(`
+            SELECT p.nombre as proveedor_nombre, COUNT(*) as cantidad
+            FROM licencias l
+            LEFT JOIN proveedores p ON l.proveedor_id = p.id
+            WHERE l.estado = 'activo'
+            GROUP BY p.nombre
+            ORDER BY cantidad DESC, p.nombre ASC
+        `);
+
         // Licencia más próxima a vencer (solo activa)
         const proxima = await pool.query(`
             SELECT l.servicio, p.nombre as proveedor_nombre, ts.nombre as tipo_servicio_nombre, l.fecha_vencimiento 
@@ -143,6 +153,10 @@ router.get('/kpis/stats', async (req, res) => {
             vencidas: parseInt(vencidas.rows[0].count),
             total: parseInt(total.rows[0].count),
             activas: parseInt(activas.rows[0].count),
+            activasPorProveedor: activasPorProveedor.rows.map(row => ({
+                proveedor_nombre: row.proveedor_nombre,
+                cantidad: parseInt(row.cantidad)
+            })),
             proximaVencerItem: proxima.rows.length > 0 ? proxima.rows[0] : null,
             vencidaItem: vencidaItem.rows.length > 0 ? vencidaItem.rows[0] : null
         });
