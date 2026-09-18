@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import KpiCard, { KpiCardSkeleton } from '../components/KpiCard';
-import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon, ExclamationTriangleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ total: 0, faltantes: 0 });
-  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0, proximaVencerItem: null, vencidaItem: null });
+  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0, activas: 0, proximaVencerItem: null, vencidaItem: null });
   const [recienteResponsiva, setRecienteResponsiva] = useState(null);
   const [recientePassword, setRecientePassword] = useState(null); // 1. Nuevo estado
   const [loading, setLoading] = useState(true);
@@ -92,6 +92,12 @@ export default function DashboardHome() {
           value={stats.faltantes}
           icon={ExclamationCircleIcon}
           colorClass="bg-red-500"
+        />
+        <KpiCard
+          title="Suscripciones Activas"
+          value={licenciasStats.activas}
+          icon={ShieldCheckIcon}
+          colorClass="bg-indigo-500"
         />
         <KpiCard
           title="Licencias por Vencer"
