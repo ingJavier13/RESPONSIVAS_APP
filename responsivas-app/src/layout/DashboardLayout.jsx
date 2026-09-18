@@ -13,7 +13,8 @@ import {
   XMarkIcon,
   UsersIcon,
   ChevronDownIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  CreditCardIcon
 } from '@heroicons/react/24/solid';
 
 const navigationLinks = [
@@ -27,6 +28,9 @@ const navigationLinks = [
   { type: 'title', text: 'Módulo Seguridad', module: 'seguridad' },
   { to: '/contrasenas', text: 'Gestionar Contraseñas', icon: KeyIcon, type: 'link', module: 'contrasenas' },
   { to: '/usuarios', text: 'Gestionar Usuarios', icon: UsersIcon, type: 'link', module: 'usuarios' },
+  { type: 'separator', module: 'licencias' },
+  { type: 'title', text: 'Módulo Suscripciones', module: 'licencias' },
+  { to: '/licencias', text: 'Gestión de Licencias', icon: CreditCardIcon, type: 'link', module: 'licencias' },
 ];
 
 export default function DashboardLayout() {
@@ -176,6 +180,7 @@ export default function DashboardLayout() {
                                if (item.module === 'responsivas' && !userPermisos.includes('responsivas')) return null;
                                if (item.module === 'contrasenas' && !userPermisos.includes('contrasenas')) return null;
                                if (item.module === 'seguridad' && !userPermisos.includes('contrasenas')) return null; 
+                               if (item.module === 'licencias' && !userPermisos.includes('licencias')) return null; 
                              }
                
                              if (item.type === 'separator') { return <li key={`sep-${index}`}><hr className="my-3 border-slate-100" /></li>; }

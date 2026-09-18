@@ -6,6 +6,7 @@ import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon } from
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ total: 0, faltantes: 0 });
+  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0 });
   const [recienteResponsiva, setRecienteResponsiva] = useState(null);
   const [recientePassword, setRecientePassword] = useState(null); // 1. Nuevo estado
   const [loading, setLoading] = useState(true);
@@ -15,17 +16,20 @@ export default function DashboardHome() {
       try {
         setLoading(true);
         // 2. Añadimos la nueva petición al Promise.all
-        const [statsRes, recienteResponsivaRes, recientePasswordRes] = await Promise.all([
+        const [statsRes, recienteResponsivaRes, recientePasswordRes, licenciasStatsRes] = await Promise.all([
           fetch('http://192.168.1.12:3001/api/responsivas/kpis/stats'),//en desarrollo localhost:3001, en producion el puerto del servidor.
           fetch('http://192.168.1.12:3001/api/responsivas/kpis/reciente'),
-          fetch('http://192.168.1.12:3001/api/passwords/kpis/reciente')
+          fetch('http://192.168.1.12:3001/api/passwords/kpis/reciente'),
+          fetch('http://192.168.1.12:3001/api/licencias/kpis/stats')
         ]);
 
         const statsData = await statsRes.json();
         const recienteResponsivaData = await recienteResponsivaRes.json();
         const recientePasswordData = await recientePasswordRes.json();
+        const licenciasData = await licenciasStatsRes.json();
         
         setStats(statsData);
+        setLicenciasStats(licenciasData);
         setRecienteResponsiva(recienteResponsivaData);
         setRecientePassword(recientePasswordData); // Guardamos el nuevo dato
       } catch (error) {
@@ -47,6 +51,7 @@ export default function DashboardHome() {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <KpiCardSkeleton />
           <KpiCardSkeleton />
           <KpiCardSkeleton />
           <KpiCardSkeleton />
@@ -73,6 +78,18 @@ export default function DashboardHome() {
           value={stats.faltantes} 
           icon={ExclamationCircleIcon}
           colorClass="bg-red-500"
+        />
+        <KpiCard 
+          title="Licencias por Vencer" 
+          value={licenciasStats.porVencer} 
+          icon={ClockIcon}
+          colorClass="bg-yellow-500"
+        />
+        <KpiCard 
+          title="Licencias Vencidas" 
+          value={licenciasStats.vencidas} 
+          icon={ExclamationCircleIcon}
+          colorClass="bg-red-600"
         />
       </div>
 

@@ -22,6 +22,13 @@ app.use('/api/categorias', categoriasRouter);
 const usuariosRouter = require('./routes/usuarios');
 app.use('/api/usuarios', usuariosRouter);
 
+// Nueva ruta para licencias
+const licenciasRouter = require('./routes/licencias');
+app.use('/api/licencias', licenciasRouter);
+
+// Inicializar Cron de licencias
+require('./cron/licenciasCron');
+
 app.listen(3001, '0.0.0.0', () => {
   console.log('Servidor corriendo en http://192.168.1.12:3001')//esto se debe de cambiar en produccion a
 })
