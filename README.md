@@ -12,6 +12,7 @@ Sistema corporativo integral para la gestión y control de responsivas de equipo
 ## ✨ Características Principales
 - **Módulo de Responsivas:** Creación, visualización y gestión de responsivas de entrega de equipo.
 - **Gestión de Archivos:** Subida de responsivas firmadas en formato PDF (`multer`).
+- **Módulo de Suscripciones:** Control y seguimiento de Licencias con catálogos dinámicos (Proveedores, Tipos de Servicio) y alertas automáticas de vencimiento por correo electrónico.
 - **Módulo de Seguridad:** Gestor de contraseñas empresariales encriptadas de forma segura (`AES-256-CBC`).
 - **Control de Acceso:** Sistema de usuarios con roles y permisos dinámicos (JWT y encriptación con `bcrypt`).
 - **Exportación:** Exportación automatizada de datos a archivos Excel divididos por categorías (`xlsx`).
@@ -32,6 +33,7 @@ Sistema corporativo integral para la gestión y control de responsivas de equipo
 ### Backend
 - **Node.js + Express** (API RESTful)
 - **PostgreSQL** (Base de datos relacional)
+- **Nodemailer & Node-Cron** (Automatización y envío de correos)
 - **Docker & Docker Compose** (Infraestructura y contenedores)
 
 ---
@@ -79,4 +81,10 @@ JWT_SECRET=tu_secreto_jwt
 
 ADMIN_USER=admin
 ADMIN_PASSWORD_HASH=hash_generado_con_bcrypt
+
+SMTP_HOST=smtp.tuservidor.com
+SMTP_PORT=465
+SMTP_USER=correo@tudominio.com
+SMTP_PASS=tu_password_smtp
+ALERT_TARGET_EMAIL=alertas@tudominio.com
 ```
