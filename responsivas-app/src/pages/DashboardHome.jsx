@@ -6,7 +6,7 @@ import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon } from
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ total: 0, faltantes: 0 });
-  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0, proximaVencerItem: null });
+  const [licenciasStats, setLicenciasStats] = useState({ porVencer: 0, vencidas: 0, total: 0, proximaVencerItem: null, vencidaItem: null });
   const [recienteResponsiva, setRecienteResponsiva] = useState(null);
   const [recientePassword, setRecientePassword] = useState(null); // 1. Nuevo estado
   const [loading, setLoading] = useState(true);
@@ -108,8 +108,27 @@ export default function DashboardHome() {
           title="Licencias Vencidas" 
           value={licenciasStats.vencidas} 
           icon={ExclamationCircleIcon}
-          colorClass="bg-red-600"
-        />
+          colorClass="bg-red-500"
+        >
+          {licenciasStats.vencidaItem ? (
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Requiere atención:</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-800">{licenciasStats.vencidaItem.servicio}</span>
+                {licenciasStats.vencidaItem.tipo_servicio_nombre && (
+                  <span className="px-2 py-0.5 bg-red-50 text-red-600 rounded text-xs border border-red-200">
+                    {licenciasStats.vencidaItem.tipo_servicio_nombre}
+                  </span>
+                )}
+              </div>
+              <span className="text-sm text-red-600 font-semibold mt-0.5">
+                Venció: {formatearFecha(licenciasStats.vencidaItem.fecha_vencimiento)}
+              </span>
+            </div>
+          ) : (
+            <span className="text-sm text-slate-400 italic">No hay atrasos</span>
+          )}
+        </KpiCard>
       </div>
 
       {/* Sección de Actividad Reciente */}

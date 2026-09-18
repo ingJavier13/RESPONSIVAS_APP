@@ -124,11 +124,23 @@ router.get('/kpis/stats', async (req, res) => {
             LIMIT 1
         `);
 
+        // Licencia vencida más antigua (la más urgente)
+        const vencidaItem = await pool.query(`
+            SELECT l.servicio, p.nombre as proveedor_nombre, ts.nombre as tipo_servicio_nombre, l.fecha_vencimiento 
+            FROM licencias l
+            LEFT JOIN proveedores p ON l.proveedor_id = p.id
+            LEFT JOIN tipos_servicio ts ON l.tipo_servicio_id = ts.id
+            WHERE l.estado = 'vencido' OR l.fecha_vencimiento < CURRENT_DATE
+            ORDER BY l.fecha_vencimiento ASC 
+            LIMIT 1
+        `);
+
         res.json({
             porVencer: parseInt(porVencer.rows[0].count),
             vencidas: parseInt(vencidas.rows[0].count),
             total: parseInt(total.rows[0].count),
-            proximaVencerItem: proxima.rows.length > 0 ? proxima.rows[0] : null
+            proximaVencerItem: proxima.rows.length > 0 ? proxima.rows[0] : null,
+            vencidaItem: vencidaItem.rows.length > 0 ? vencidaItem.rows[0] : null
         });
     } catch (error) {
         console.error(error);
