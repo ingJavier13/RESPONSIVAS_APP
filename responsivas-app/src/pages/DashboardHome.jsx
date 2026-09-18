@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import KpiCard, { KpiCardSkeleton } from '../components/KpiCard';
-import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, ExclamationCircleIcon, ClockIcon, KeyIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ total: 0, faltantes: 0 });
@@ -27,7 +27,7 @@ export default function DashboardHome() {
         const recienteResponsivaData = await recienteResponsivaRes.json();
         const recientePasswordData = await recientePasswordRes.json();
         const licenciasData = await licenciasStatsRes.json();
-        
+
         setStats(statsData);
         setLicenciasStats(licenciasData);
         setRecienteResponsiva(recienteResponsivaData);
@@ -45,6 +45,20 @@ export default function DashboardHome() {
     if (!fechaISO) return 'N/A';
     const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
     return new Date(fechaISO).toLocaleDateString('es-MX', opciones);
+  };
+
+  const calcularDiasRestantes = (fechaISO) => {
+    if (!fechaISO) return 0;
+    const fechaVencimiento = new Date(fechaISO);
+    // Ajustar por zona horaria para precisión local
+    fechaVencimiento.setMinutes(fechaVencimiento.getMinutes() + fechaVencimiento.getTimezoneOffset());
+    fechaVencimiento.setHours(0, 0, 0, 0);
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const diffTime = fechaVencimiento - hoy;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   if (loading) {
@@ -67,21 +81,21 @@ export default function DashboardHome() {
     <div className="space-y-8">
       {/* Sección de KPIs numéricos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <KpiCard 
-          title="Total de Responsivas" 
-          value={stats.total} 
+        <KpiCard
+          title="Total de Responsivas"
+          value={stats.total}
           icon={DocumentDuplicateIcon}
-          colorClass="bg-blue-500" 
+          colorClass="bg-blue-500"
         />
-        <KpiCard 
-          title="Faltantes de Firma" 
-          value={stats.faltantes} 
+        <KpiCard
+          title="Faltantes de Firma"
+          value={stats.faltantes}
           icon={ExclamationCircleIcon}
           colorClass="bg-red-500"
         />
-        <KpiCard 
-          title="Licencias por Vencer" 
-          value={licenciasStats.porVencer} 
+        <KpiCard
+          title="Licencias por Vencer"
+          value={licenciasStats.porVencer}
           icon={ClockIcon}
           colorClass="bg-yellow-500"
         >
@@ -96,18 +110,29 @@ export default function DashboardHome() {
                   </span>
                 )}
               </div>
-              <span className="text-sm text-yellow-600 font-semibold mt-0.5">
-                {formatearFecha(licenciasStats.proximaVencerItem.fecha_vencimiento)}
-              </span>
+              <div className="flex items-center mt-1">
+                <span className="text-sm text-yellow-600 font-semibold">
+                  {formatearFecha(licenciasStats.proximaVencerItem.fecha_vencimiento)}
+                </span>
+                {(() => {
+                  const dias = calcularDiasRestantes(licenciasStats.proximaVencerItem.fecha_vencimiento);
+                  const textoDias = dias === 0 ? 'Vence hoy' : dias === 1 ? 'Falta 1 día' : `Faltan ${dias} días`;
+                  return (
+                    <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 font-semibold rounded text-xs">
+                      {textoDias}
+                    </span>
+                  );
+                })()}
+              </div>
             </div>
           ) : (
             <span className="text-sm text-slate-400 italic">Todo al día</span>
           )}
         </KpiCard>
-        <KpiCard 
-          title="Licencias Vencidas" 
-          value={licenciasStats.vencidas} 
-          icon={ExclamationCircleIcon}
+        <KpiCard
+          title="Licencias Vencidas"
+          value={licenciasStats.vencidas}
+          icon={ExclamationTriangleIcon}
           colorClass="bg-red-500"
         >
           {licenciasStats.vencidaItem ? (
@@ -121,9 +146,21 @@ export default function DashboardHome() {
                   </span>
                 )}
               </div>
-              <span className="text-sm text-red-600 font-semibold mt-0.5">
-                Venció: {formatearFecha(licenciasStats.vencidaItem.fecha_vencimiento)}
-              </span>
+              <div className="flex items-center mt-1">
+                <span className="text-sm text-red-600 font-semibold">
+                  Venció: {formatearFecha(licenciasStats.vencidaItem.fecha_vencimiento)}
+                </span>
+                {(() => {
+                  const dias = calcularDiasRestantes(licenciasStats.vencidaItem.fecha_vencimiento);
+                  const diasAtraso = Math.abs(dias);
+                  const textoAtraso = diasAtraso === 1 ? 'Atraso de 1 día' : `Atraso de ${diasAtraso} días`;
+                  return (
+                    <span className="ml-2 px-2 py-0.5 bg-red-100 text-red-800 font-bold rounded text-xs shadow-sm">
+                      {textoAtraso}
+                    </span>
+                  );
+                })()}
+              </div>
             </div>
           ) : (
             <span className="text-sm text-slate-400 italic">No hay atrasos</span>
@@ -164,7 +201,7 @@ export default function DashboardHome() {
               <p className="text-sm font-medium text-slate-600">{formatearFecha(recientePassword.created_at)}</p>
             </div>
           ) : (
-             <p className="text-slate-500 text-sm">No hay contraseñas recientes registradas.</p>
+            <p className="text-slate-500 text-sm">No hay contraseñas recientes registradas.</p>
           )}
         </div>
       </div>
