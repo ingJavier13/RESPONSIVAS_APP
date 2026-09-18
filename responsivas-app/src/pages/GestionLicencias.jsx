@@ -4,15 +4,18 @@ import { PlusIcon, PencilIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react
 
 const API_URL_LICENCIAS = 'http://192.168.1.12:3001/api/licencias';
 const API_URL_PROVEEDORES = 'http://192.168.1.12:3001/api/proveedores';
+const API_URL_TIPOS = 'http://192.168.1.12:3001/api/tipos-servicio';
 
 export default function GestionLicencias() {
     const [licencias, setLicencias] = useState([]);
     const [proveedores, setProveedores] = useState([]);
+    const [tipos, setTipos] = useState([]);
     const [loading, setLoading] = useState(true);
     
     // Filtros
     const [searchTerm, setSearchTerm] = useState('');
     const [filterProveedor, setFilterProveedor] = useState('');
+    const [filterTipo, setFilterTipo] = useState('');
     const [filterEstado, setFilterEstado] = useState('');
 
     // Modal states
@@ -22,6 +25,7 @@ export default function GestionLicencias() {
 
     const [formData, setFormData] = useState({
         servicio: '',
+        tipo_servicio_id: '',
         proveedor_id: '',
         fecha_vencimiento: '',
         frecuencia_pago: 'anual',
@@ -35,14 +39,18 @@ export default function GestionLicencias() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [resLicencias, resProveedores] = await Promise.all([
+            const [resLicencias, resProveedores, resTipos] = await Promise.all([
                 fetch(API_URL_LICENCIAS),
-                fetch(API_URL_PROVEEDORES)
+                fetch(API_URL_PROVEEDORES),
+                fetch(API_URL_TIPOS)
             ]);
             const dataLicencias = await resLicencias.json();
             const dataProveedores = await resProveedores.json();
+            const dataTipos = await resTipos.json();
+            
             setLicencias(dataLicencias);
             setProveedores(dataProveedores);
+            setTipos(dataTipos);
         } catch (error) {
             console.error('Error fetching data:', error);
             toast.error('No se pudieron cargar los datos');
@@ -57,6 +65,7 @@ export default function GestionLicencias() {
             setCurrentLicencia(licencia);
             setFormData({
                 servicio: licencia.servicio,
+                tipo_servicio_id: licencia.tipo_servicio_id || '',
                 proveedor_id: licencia.proveedor_id,
                 fecha_vencimiento: licencia.fecha_vencimiento.split('T')[0], // format to YYYY-MM-DD
                 frecuencia_pago: licencia.frecuencia_pago,
@@ -67,6 +76,7 @@ export default function GestionLicencias() {
             setCurrentLicencia(null);
             setFormData({
                 servicio: '',
+                tipo_servicio_id: '',
                 proveedor_id: proveedores.length > 0 ? proveedores[0].id : '',
                 fecha_vencimiento: '',
                 frecuencia_pago: 'anual',
@@ -166,6 +176,7 @@ export default function GestionLicencias() {
     const filteredLicencias = licencias.filter(lic => {
         const matchSearch = lic.servicio.toLowerCase().includes(searchTerm.toLowerCase());
         const matchProveedor = filterProveedor ? lic.proveedor_id.toString() === filterProveedor : true;
+        const matchTipo = filterTipo ? (lic.tipo_servicio_id && lic.tipo_servicio_id.toString() === filterTipo) : true;
         
         let matchEstado = true;
         if (filterEstado) {
@@ -176,7 +187,7 @@ export default function GestionLicencias() {
             if (filterEstado === 'proxima') matchEstado = proxima && !vencida;
         }
 
-        return matchSearch && matchProveedor && matchEstado;
+        return matchSearch && matchProveedor && matchTipo && matchEstado;
     });
 
     return (
@@ -193,7 +204,7 @@ export default function GestionLicencias() {
             </div>
 
             {/* Filtros */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Buscar Servicio</label>
                     <input
@@ -205,7 +216,20 @@ export default function GestionLicencias() {
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar por Proveedor</label>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Tipo de Servicio</label>
+                    <select
+                        className="input bg-white"
+                        value={filterTipo}
+                        onChange={(e) => setFilterTipo(e.target.value)}
+                    >
+                        <option value="">Todos los tipos</option>
+                        {tipos.map(t => (
+                            <option key={t.id} value={t.id}>{t.nombre}</option>
+                        ))}
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Proveedor</label>
                     <select
                         className="input bg-white"
                         value={filterProveedor}
@@ -218,7 +242,7 @@ export default function GestionLicencias() {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Filtrar por Estado</label>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Estado</label>
                     <select
                         className="input bg-white"
                         value={filterEstado}
@@ -242,6 +266,7 @@ export default function GestionLicencias() {
                         <thead>
                             <tr className="bg-slate-50 text-slate-500 border-b border-slate-200">
                                 <th className="p-3 font-semibold text-sm">Servicio</th>
+                                <th className="p-3 font-semibold text-sm">Tipo</th>
                                 <th className="p-3 font-semibold text-sm">Proveedor</th>
                                 <th className="p-3 font-semibold text-sm">Frecuencia</th>
                                 <th className="p-3 font-semibold text-sm">Vencimiento</th>
@@ -258,6 +283,7 @@ export default function GestionLicencias() {
                                     return (
                                         <tr key={lic.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
                                             <td className="p-3 font-medium text-slate-800">{lic.servicio}</td>
+                                            <td className="p-3 text-slate-600">{lic.tipo_servicio_nombre || <span className="text-slate-400 italic">No asignado</span>}</td>
                                             <td className="p-3 text-slate-600 font-medium">{lic.proveedor_nombre}</td>
                                             <td className="p-3 text-slate-600 capitalize">{lic.frecuencia_pago}</td>
                                             <td className="p-3 text-slate-600 font-medium">
@@ -302,7 +328,7 @@ export default function GestionLicencias() {
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="p-6 text-center text-slate-500">
+                                    <td colSpan="7" className="p-6 text-center text-slate-500">
                                         No se encontraron licencias.
                                     </td>
                                 </tr>
@@ -334,8 +360,21 @@ export default function GestionLicencias() {
                                         className="input"
                                         value={formData.servicio}
                                         onChange={(e) => setFormData({...formData, servicio: e.target.value})}
-                                        placeholder="Ej. Hostinger, Microsoft 365"
+                                        placeholder="Ej. Hosting Principal, Cuenta Correo Info"
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Tipo de Servicio</label>
+                                    <select
+                                        className="input"
+                                        value={formData.tipo_servicio_id}
+                                        onChange={(e) => setFormData({...formData, tipo_servicio_id: e.target.value})}
+                                    >
+                                        <option value="">Seleccione un tipo (Opcional)</option>
+                                        {tipos.map(t => (
+                                            <option key={t.id} value={t.id}>{t.nombre}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Proveedor</label>

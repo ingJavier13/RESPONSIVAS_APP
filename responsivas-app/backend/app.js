@@ -30,6 +30,10 @@ app.use('/api/licencias', licenciasRouter);
 const proveedoresRouter = require('./routes/proveedores');
 app.use('/api/proveedores', proveedoresRouter);
 
+// Nueva ruta para tipos de servicio
+const tiposServicioRouter = require('./routes/tiposServicio');
+app.use('/api/tipos-servicio', tiposServicioRouter);
+
 // Inicializar Cron de licencias
 require('./cron/licenciasCron');
 

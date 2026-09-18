@@ -6,9 +6,10 @@ const pool = require('../db');
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT l.*, p.nombre as proveedor_nombre 
+            SELECT l.*, p.nombre as proveedor_nombre, ts.nombre as tipo_servicio_nombre 
             FROM licencias l 
             LEFT JOIN proveedores p ON l.proveedor_id = p.id 
+            LEFT JOIN tipos_servicio ts ON l.tipo_servicio_id = ts.id
             ORDER BY l.fecha_vencimiento ASC
         `);
         res.json(result.rows);
@@ -20,11 +21,11 @@ router.get('/', async (req, res) => {
 
 // Crear nueva licencia
 router.post('/', async (req, res) => {
-    const { servicio, proveedor_id, fecha_vencimiento, frecuencia_pago } = req.body;
+    const { servicio, proveedor_id, tipo_servicio_id, fecha_vencimiento, frecuencia_pago } = req.body;
     try {
         const result = await pool.query(
-            'INSERT INTO licencias (servicio, proveedor_id, fecha_vencimiento, frecuencia_pago) VALUES ($1, $2, $3, $4) RETURNING *',
-            [servicio, proveedor_id, fecha_vencimiento, frecuencia_pago]
+            'INSERT INTO licencias (servicio, proveedor_id, tipo_servicio_id, fecha_vencimiento, frecuencia_pago) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [servicio, proveedor_id, tipo_servicio_id || null, fecha_vencimiento, frecuencia_pago]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -36,11 +37,11 @@ router.post('/', async (req, res) => {
 // Actualizar licencia
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { servicio, proveedor_id, fecha_vencimiento, frecuencia_pago, estado } = req.body;
+    const { servicio, proveedor_id, tipo_servicio_id, fecha_vencimiento, frecuencia_pago, estado } = req.body;
     try {
         const result = await pool.query(
-            'UPDATE licencias SET servicio=$1, proveedor_id=$2, fecha_vencimiento=$3, frecuencia_pago=$4, estado=$5 WHERE id=$6 RETURNING *',
-            [servicio, proveedor_id, fecha_vencimiento, frecuencia_pago, estado, id]
+            'UPDATE licencias SET servicio=$1, proveedor_id=$2, tipo_servicio_id=$3, fecha_vencimiento=$4, frecuencia_pago=$5, estado=$6 WHERE id=$7 RETURNING *',
+            [servicio, proveedor_id, tipo_servicio_id || null, fecha_vencimiento, frecuencia_pago, estado, id]
         );
         if (result.rowCount === 0) return res.status(404).json({ error: 'Licencia no encontrada' });
         res.json(result.rows[0]);
@@ -114,9 +115,10 @@ router.get('/kpis/stats', async (req, res) => {
 
         // Licencia más próxima a vencer (solo activa)
         const proxima = await pool.query(`
-            SELECT l.servicio, p.nombre as proveedor_nombre, l.fecha_vencimiento 
+            SELECT l.servicio, p.nombre as proveedor_nombre, ts.nombre as tipo_servicio_nombre, l.fecha_vencimiento 
             FROM licencias l
             LEFT JOIN proveedores p ON l.proveedor_id = p.id
+            LEFT JOIN tipos_servicio ts ON l.tipo_servicio_id = ts.id
             WHERE l.estado = 'activo' AND l.fecha_vencimiento >= CURRENT_DATE
             ORDER BY l.fecha_vencimiento ASC 
             LIMIT 1

@@ -18,10 +18,10 @@ const transporter = nodemailer.createTransport({
 cron.schedule('0 8 * * *', async () => {
     console.log('[CRON] Verificando licencias por vencer...');
     try {
-        const result = await pool.query(`
-            SELECT l.*, p.nombre as proveedor_nombre 
+            SELECT l.*, p.nombre as proveedor_nombre, ts.nombre as tipo_servicio_nombre 
             FROM licencias l
             LEFT JOIN proveedores p ON l.proveedor_id = p.id
+            LEFT JOIN tipos_servicio ts ON l.tipo_servicio_id = ts.id
             WHERE l.estado = 'activo' 
             AND l.fecha_vencimiento <= CURRENT_DATE + INTERVAL '5 days'
         `);
@@ -37,10 +37,11 @@ cron.schedule('0 8 * * *', async () => {
                 <table border="1" cellpadding="10" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Servicio</th>
-                            <th>Proveedor</th>
-                            <th>Frecuencia</th>
-                            <th>Fecha de Vencimiento</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: left;">Servicio</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: left;">Tipo</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: left;">Proveedor</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: left;">Frecuencia</th>
+                            <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: left;">Fecha de Vencimiento</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,10 +50,13 @@ cron.schedule('0 8 * * *', async () => {
             licenciasPorVencer.forEach(lic => {
                 htmlContent += `
                     <tr>
-                        <td>${lic.servicio}</td>
-                        <td>${lic.proveedor_nombre}</td>
-                        <td>${lic.frecuencia_pago}</td>
-                        <td>${new Date(lic.fecha_vencimiento).toLocaleDateString()}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${lic.servicio}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${lic.tipo_servicio_nombre || 'N/A'}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${lic.proveedor_nombre}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-transform: capitalize;">${lic.frecuencia_pago}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: #b91c1c;">
+                            ${new Date(lic.fecha_vencimiento).toLocaleDateString()}
+                        </td>
                     </tr>
                 `;
             });
