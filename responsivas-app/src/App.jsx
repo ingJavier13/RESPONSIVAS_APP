@@ -7,6 +7,7 @@ import DashboardHome from './pages/DashboardHome';
 import GestionContrasenas from './pages/GestionContrasenas'
 import GestionUsuarios from './pages/GestionUsuarios'
 import GestionLicencias from './pages/GestionLicencias'
+import GestionProveedores from './pages/GestionProveedores'
 
 //lugar donde se tienen que agregar los componentas para poder añadir al dashboard
 const router = createBrowserRouter([
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
           { path: 'usuarios', element: <GestionUsuarios /> },
           { path: 'subir', element: <SubirResponsiva />},
           { path: 'licencias', element: <GestionLicencias /> },
+          { path: 'proveedores', element: <GestionProveedores /> },
           { path: '*', element: <div>404 Not Found</div>},
         ],
       },

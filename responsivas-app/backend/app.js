@@ -26,6 +26,10 @@ app.use('/api/usuarios', usuariosRouter);
 const licenciasRouter = require('./routes/licencias');
 app.use('/api/licencias', licenciasRouter);
 
+// Nueva ruta para proveedores
+const proveedoresRouter = require('./routes/proveedores');
+app.use('/api/proveedores', proveedoresRouter);
+
 // Inicializar Cron de licencias
 require('./cron/licenciasCron');
 

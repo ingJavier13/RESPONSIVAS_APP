@@ -19,9 +19,11 @@ cron.schedule('0 8 * * *', async () => {
     console.log('[CRON] Verificando licencias por vencer...');
     try {
         const result = await pool.query(`
-            SELECT * FROM licencias 
-            WHERE estado = 'activo' 
-            AND fecha_vencimiento <= CURRENT_DATE + INTERVAL '5 days'
+            SELECT l.*, p.nombre as proveedor_nombre 
+            FROM licencias l
+            LEFT JOIN proveedores p ON l.proveedor_id = p.id
+            WHERE l.estado = 'activo' 
+            AND l.fecha_vencimiento <= CURRENT_DATE + INTERVAL '5 days'
         `);
 
         const licenciasPorVencer = result.rows;
@@ -48,7 +50,7 @@ cron.schedule('0 8 * * *', async () => {
                 htmlContent += `
                     <tr>
                         <td>${lic.servicio}</td>
-                        <td>${lic.proveedor}</td>
+                        <td>${lic.proveedor_nombre}</td>
                         <td>${lic.frecuencia_pago}</td>
                         <td>${new Date(lic.fecha_vencimiento).toLocaleDateString()}</td>
                     </tr>

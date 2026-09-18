@@ -14,7 +14,8 @@ import {
   UsersIcon,
   ChevronDownIcon,
   UserCircleIcon,
-  CreditCardIcon
+  CreditCardIcon,
+  BuildingOfficeIcon
 } from '@heroicons/react/24/solid';
 
 const navigationLinks = [
@@ -31,6 +32,7 @@ const navigationLinks = [
   { type: 'separator', module: 'licencias' },
   { type: 'title', text: 'Módulo Suscripciones', module: 'licencias' },
   { to: '/licencias', text: 'Gestión de Licencias', icon: CreditCardIcon, type: 'link', module: 'licencias' },
+  { to: '/proveedores', text: 'Proveedores', icon: BuildingOfficeIcon, type: 'link', module: 'licencias' },
 ];
 
 export default function DashboardLayout() {
