@@ -18,6 +18,7 @@ const transporter = nodemailer.createTransport({
 cron.schedule('0 8 * * *', async () => {
     console.log('[CRON] Verificando licencias por vencer...');
     try {
+        const result = await pool.query(`
             SELECT l.*, p.nombre as proveedor_nombre, ts.nombre as tipo_servicio_nombre 
             FROM licencias l
             LEFT JOIN proveedores p ON l.proveedor_id = p.id
